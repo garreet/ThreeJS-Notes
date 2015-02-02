@@ -974,10 +974,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		var object = event.target;
 
+		// 遍历子对象
 		object.traverse( function ( child ) {
 
+			// 把子对象的删除事件移除事件队列
 			child.removeEventListener( 'remove', onObjectRemoved );
 
+			// 删除对象自身
 			removeObject( child );
 
 		} );
@@ -990,9 +993,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 	var onGeometryDispose = function ( event ) {
 
 		var geometry = event.target;
-
+		// 移除几何对象销毁事件
 		geometry.removeEventListener( 'dispose', onGeometryDispose );
-
+		// 销毁几何对象
 		deallocateGeometry( geometry );
 
 	};
@@ -1050,23 +1053,23 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		// 定义需要删除的buffer列表
 		var buffers = [
-			'__webglVertexBuffer',
-			'__webglNormalBuffer',
-			'__webglTangentBuffer',
-			'__webglColorBuffer',
-			'__webglUVBuffer',
-			'__webglUV2Buffer',
+			'__webglVertexBuffer',			// 顶点
+			'__webglNormalBuffer',			// 法线
+			'__webglTangentBuffer',			// 切线
+			'__webglColorBuffer',			// 颜色
+			'__webglUVBuffer',				// UV
+			'__webglUV2Buffer',				// UV2
 			
-			'__webglSkinIndicesBuffer',
-			'__webglSkinWeightsBuffer',
+			'__webglSkinIndicesBuffer',		// 蒙皮参数
+			'__webglSkinWeightsBuffer',		// 蒙皮权重
 			
-			'__webglFaceBuffer',
-			'__webglLineBuffer',
+			'__webglFaceBuffer',			// 索引
+			'__webglLineBuffer',			// 线框
 			
-			'__webglLineDistanceBuffer'
+			'__webglLineDistanceBuffer'		// 线距离
 		];
 
-		// 依次删除列表中存在的buffer
+		// 依次删除预定义列表中存在的buffer
 		for ( var i = 0, l = buffers.length; i < l; i ++ ) {
 
 			var name = buffers[ i ];
@@ -1082,7 +1085,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 		// custom attributes
-		// 删除自定义的属性
+		// 删除自定义的属性buffer
 		if ( geometry.__webglCustomAttributesList !== undefined ) {
 
 			for ( var name in geometry.__webglCustomAttributesList ) {
@@ -1107,7 +1110,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 		delete geometry.__webglInit;
 
 		if ( geometry instanceof THREE.BufferGeometry ) {
-
+			// 自定义buffer几何对象销毁
+			// 遍历几何对象的glbuffer并销毁
 			for ( var name in geometry.attributes ) {
 			
 				var attribute = geometry.attributes[ name ];
@@ -1121,19 +1125,21 @@ THREE.WebGLRenderer = function ( parameters ) {
 				}
 
 			}
-
+			// 渲染信息的几何对象数目减一
 			_this.info.memory.geometries --;
 
 		} else {
-
+			// 从几何对象组内查找到所用到的几何对象
 			var geometryGroupsList = geometryGroups[ geometry.id ];
 
 			if ( geometryGroupsList !== undefined ) {
 
+				// 遍历生成的buffer对象
 				for ( var i = 0,l = geometryGroupsList.length; i < l; i ++ ) {
 
 					var geometryGroup = geometryGroupsList[ i ];
 
+					// 删除可变形buffer
 					if ( geometryGroup.numMorphTargets !== undefined ) {
 
 						for ( var m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
@@ -1145,7 +1151,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 						delete geometryGroup.__webglMorphTargetsBuffers;
 
 					}
-
+					// 删除可变形法线
 					if ( geometryGroup.numMorphNormals !== undefined ) {
 
 						for ( var m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
@@ -1157,7 +1163,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 						delete geometryGroup.__webglMorphNormalsBuffers;
 
 					}
-
+					// 删除几何对象
 					deleteBuffers( geometryGroup );
 
 				}
@@ -3811,10 +3817,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_currentGeometryGroupHash = - 1;		// 几何数据组
 		_currentMaterialId = - 1;				// 材质id组
 		_currentCamera = null;					// 相机
-		_lightsNeedUpdate = true;				// 灯光
+		_lightsNeedUpdate = true;				// 灯光更新标记
 
 		// update scene graph
-		// 更新场景坐标至世界坐标系
+		// 更新场景坐标至世界坐标系，包含场景内的子对象
 		if ( scene.autoUpdate === true ) scene.updateMatrixWorld();
 
 		// update camera matrices and frustum
@@ -3832,7 +3838,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		} );
-		// 反转相机矩阵
+		// 计算相机世界矩阵的逆
 		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
 		// 相机的投影坐标系和世界坐标系相乘
@@ -3848,7 +3854,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		sprites.length = 0;
 		lensFlares.length = 0;
 
-		// 把场景内的对象分类
+		// 场景内的对象分类并生成渲染结构
 		projectObject( scene, scene );
 
 		// 把透明和不透明的对象分类
@@ -3956,7 +3962,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	/**
-	 * @desc 场景内的对象分类<br />
+	 * @desc 场景内的对象分类并生成渲染结构<br />
 	 * 分为光照，闪光，透镜，普通等几类
 	 * @param {THREE.Scene} scene 场景对象
 	 * @param {THREE.Object3D} object 3D对象
@@ -4264,15 +4270,15 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
-		// 几何信息初始化
+		// 几何信息渲染结构初始化
 		var geometry = object.geometry;
 
 		if ( geometry === undefined ) {
-
 			// ImmediateRenderObject
+			// 立即渲染对象
 
 		} else if ( geometry.__webglInit === undefined ) {
-
+			// 几何对象渲染结构初始化 及 几何对象渲染结构销毁事件添加
 			geometry.__webglInit = true;
 			geometry.addEventListener( 'dispose', onGeometryDispose );
 
@@ -4282,12 +4288,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else if ( object instanceof THREE.Mesh ) {
 
-				// mesh对象初始化
+				// mesh对象渲染结构初始化
 				initGeometryGroups( scene, object, geometry );
 
 			} else if ( object instanceof THREE.Line ) {
 
-				// 线对象初始化
+				// 线对象渲染结构初始化
 				if ( geometry.__webglVertexBuffer === undefined ) {
 
 					createLineBuffers( geometry );
@@ -4301,7 +4307,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else if ( object instanceof THREE.PointCloud ) {
 
-				// 点云对象初始化
+				// 点云对象渲染结构初始化
 				if ( geometry.__webglVertexBuffer === undefined ) {
 
 					createParticleBuffers( geometry );
@@ -4439,7 +4445,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	/**
-	 * @desc 初始化几何对象组
+	 * @desc 初始化Mesh几何对象组
 	 * @param {THREE.Scene} scene 场景
 	 * @param {THREE.Object3D} object 对象
 	 * @param {THREE.Geometry} geometry 几何信息
@@ -4684,15 +4690,15 @@ THREE.WebGLRenderer = function ( parameters ) {
 		if ( object instanceof THREE.Mesh  ||
 			 object instanceof THREE.PointCloud ||
 			 object instanceof THREE.Line ) {
-
+			// 普通对象删除webgl对象
 			delete _webglObjects[ object.id ];
 
 		} else if ( object instanceof THREE.ImmediateRenderObject || object.immediateRenderCallback ) {
 
+			// 立即渲染对象移除渲染对象实例
 			removeInstances( _webglObjectsImmediate, object );
-
 		}
-
+		// 删除对象WebGL初始化信息
 		delete object.__webglInit;
 		delete object._modelViewMatrix;
 		delete object._normalMatrix;
