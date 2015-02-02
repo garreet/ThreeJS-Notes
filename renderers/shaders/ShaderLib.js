@@ -6,16 +6,22 @@
  * @author mikael emtinger / http://gomo.se/
  */
 
-
+/**
+ * @desc shader库，包含各种定义的材质的shader组成
+ * @memberof THREE
+ * @type {*}
+ */
 THREE.ShaderLib = {
 
+	// 基础shader
 	'basic': {
 
+		// uniforms列表
 		uniforms: THREE.UniformsUtils.merge( [
 
-			THREE.UniformsLib[ "common" ],
-			THREE.UniformsLib[ "fog" ],
-			THREE.UniformsLib[ "shadowmap" ]
+			THREE.UniformsLib[ "common" ],		// 通用
+			THREE.UniformsLib[ "fog" ],			// 雾效
+			THREE.UniformsLib[ "shadowmap" ]	// 阴影
 
 		] ),
 
@@ -96,7 +102,7 @@ THREE.ShaderLib = {
 		].join("\n")
 
 	},
-
+	// 兰伯特效果shader
 	'lambert': {
 
 		uniforms: THREE.UniformsUtils.merge( [
@@ -223,7 +229,7 @@ THREE.ShaderLib = {
 		].join("\n")
 
 	},
-
+	// 泊松效果shader
 	'phong': {
 
 		uniforms: THREE.UniformsUtils.merge( [
@@ -342,7 +348,7 @@ THREE.ShaderLib = {
 		].join("\n")
 
 	},
-
+	// 基础例子效果shader
 	'particle_basic': {
 
 		uniforms: THREE.UniformsUtils.merge( [
@@ -410,7 +416,7 @@ THREE.ShaderLib = {
 		].join("\n")
 
 	},
-
+	// 点效果shader
 	'dashed': {
 
 		uniforms: THREE.UniformsUtils.merge( [
@@ -484,7 +490,7 @@ THREE.ShaderLib = {
 		].join("\n")
 
 	},
-
+	// 深度效果shader
 	'depth': {
 
 		uniforms: {
@@ -540,7 +546,7 @@ THREE.ShaderLib = {
 		].join("\n")
 
 	},
-
+	// 法线效果shader
 	'normal': {
 
 		uniforms: {
@@ -593,7 +599,7 @@ THREE.ShaderLib = {
 	//		- normal + diffuse + specular + AO + displacement + reflection + shadow maps
 	//		- point and directional lights (use with "lights: true" material option)
 	 ------------------------------------------------------------------------- */
-
+	// 法线贴图效果shader
 	'normalmap' : {
 
 		uniforms: THREE.UniformsUtils.merge( [
@@ -1208,7 +1214,7 @@ THREE.ShaderLib = {
 	/* -------------------------------------------------------------------------
 	//	Cube map shader
 	 ------------------------------------------------------------------------- */
-
+	// 立方体效果shader
 	'cube': {
 
 		uniforms: { "tCube": { type: "t", value: null },
@@ -1265,7 +1271,7 @@ THREE.ShaderLib = {
 	 * see also
 	 * http://aras-p.info/blog/2009/07/30/encoding-floats-to-rgba-the-final/
 	 */
-
+	// 深度颜色效果shader
 	'depthRGBA': {
 
 		uniforms: {},
