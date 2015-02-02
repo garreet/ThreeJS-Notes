@@ -365,17 +365,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	_usedTextureUnits = 0,
 
 	// GL state cache
-		/**
-		 * @desc 缓存的双面渲染类型
-		 * @default
-		 * @type {number}
-		 * @private
-		 */
+	// GL 状态缓存
 	_oldDoubleSided = - 1,
 	_oldFlipSided = - 1,
 
 	_oldBlending = - 1,
-
 	_oldBlendEquation = - 1,
 	_oldBlendSrc = - 1,
 	_oldBlendDst = - 1,
@@ -389,6 +383,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	_oldLineWidth = null,
 
+	// 视口相关变量
 	_viewportX = 0,
 	_viewportY = 0,
 	_viewportWidth = _canvas.width,
@@ -396,21 +391,23 @@ THREE.WebGLRenderer = function ( parameters ) {
 	_currentWidth = 0,
 	_currentHeight = 0,
 
+	// 属性相关变量
 	_newAttributes = new Uint8Array( 16 ),
 	_enabledAttributes = new Uint8Array( 16 ),
 
 	// frustum
+	// 裁剪体缓存
 	_frustum = new THREE.Frustum(),
 
 	 // camera matrices cache
-
+	// 相机矩阵缓存
 	_projScreenMatrix = new THREE.Matrix4(),
 	_projScreenMatrixPS = new THREE.Matrix4(),
 
 	_vector3 = new THREE.Vector3(),
 
 	// light arrays cache
-
+	// 光线相关缓存
 	_direction = new THREE.Vector3(),
 
 	_lightsNeedUpdate = true,
@@ -426,13 +423,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// initialize
-	// 初始化相关
-	// 定义GL上下文
+	// rendeer 初始化过程
 	var _gl;
 
-	// 从canvas中获取gl上下文
 	try {
-
+		// 设置GL的初始化参数
 		var attributes = {
 			alpha: _alpha,
 			depth: _depth,
@@ -464,7 +459,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
-	// 定义shader渲染精度
+	// 设置GL的shader精度参数
 	if ( _gl.getShaderPrecisionFormat === undefined ) {
 
 		_gl.getShaderPrecisionFormat = function () {
@@ -478,7 +473,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc webgl扩展对象
+	 * @private
+	 * @type {THREE.WebGLExtensions}
+	 */
 	var extensions = new THREE.WebGLExtensions( _gl );
 
 	extensions.get( 'OES_texture_float' );
@@ -491,30 +490,25 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
-	// 设置GL的默认参数
+	//
+	// 设置默认GL状态
 	function setDefaultGLState() {
 
-		// 黑色背景
 		_gl.clearColor( 0, 0, 0, 1 );
 		_gl.clearDepth( 1 );
 		_gl.clearStencil( 0 );
 
-		// 开启深度测试
 		_gl.enable( _gl.DEPTH_TEST );
 		_gl.depthFunc( _gl.LEQUAL );
 
-		// 顺时针
 		_gl.frontFace( _gl.CCW );
-		// 裁剪正反面
 		_gl.cullFace( _gl.BACK );
 		_gl.enable( _gl.CULL_FACE );
 
-		// 开启混合
 		_gl.enable( _gl.BLEND );
 		_gl.blendEquation( _gl.FUNC_ADD );
 		_gl.blendFunc( _gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA );
 
-		// 设置窗口大小
 		_gl.viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
 
 		_gl.clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
@@ -523,10 +517,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	setDefaultGLState();
 
+	/**
+	 * @desc renderer 的gl上下文对象
+	 */
 	this.context = _gl;
 
 	// GPU capabilities
-	// GPU能力设置
+	// gpu能力参数获取
 	var _maxTextures = _gl.getParameter( _gl.MAX_TEXTURE_IMAGE_UNITS );
 	var _maxVertexTextures = _gl.getParameter( _gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS );
 	var _maxTextureSize = _gl.getParameter( _gl.MAX_TEXTURE_SIZE );
@@ -535,15 +532,17 @@ THREE.WebGLRenderer = function ( parameters ) {
 	var _supportsVertexTextures = _maxVertexTextures > 0;
 	var _supportsBoneTextures = _supportsVertexTextures && extensions.get( 'OES_texture_float' );
 
-	// 获取shader中的坐标精度
+	//
+	// 顶点shader精度定义
 	var _vertexShaderPrecisionHighpFloat = _gl.getShaderPrecisionFormat( _gl.VERTEX_SHADER, _gl.HIGH_FLOAT );
 	var _vertexShaderPrecisionMediumpFloat = _gl.getShaderPrecisionFormat( _gl.VERTEX_SHADER, _gl.MEDIUM_FLOAT );
 	var _vertexShaderPrecisionLowpFloat = _gl.getShaderPrecisionFormat( _gl.VERTEX_SHADER, _gl.LOW_FLOAT );
-
+	// 片段shader精度定义
 	var _fragmentShaderPrecisionHighpFloat = _gl.getShaderPrecisionFormat( _gl.FRAGMENT_SHADER, _gl.HIGH_FLOAT );
 	var _fragmentShaderPrecisionMediumpFloat = _gl.getShaderPrecisionFormat( _gl.FRAGMENT_SHADER, _gl.MEDIUM_FLOAT );
 	var _fragmentShaderPrecisionLowpFloat = _gl.getShaderPrecisionFormat( _gl.FRAGMENT_SHADER, _gl.LOW_FLOAT );
 
+	// 获取压缩纹理格式，主要是 pvrtc和s3tc 的检测
 	var getCompressedTextureFormats = ( function () {
 
 		var array;
@@ -577,10 +576,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 	} )();
 
 	// clamp precision to maximum available
-	// 坐标精度设置
+	// 根据顶点和片段shader精度设置是否支持高精度
 	var highpAvailable = _vertexShaderPrecisionHighpFloat.precision > 0 && _fragmentShaderPrecisionHighpFloat.precision > 0;
 	var mediumpAvailable = _vertexShaderPrecisionMediumpFloat.precision > 0 && _fragmentShaderPrecisionMediumpFloat.precision > 0;
-
+	// 精度提示
 	if ( _precision === 'highp' && ! highpAvailable ) {
 
 		if ( mediumpAvailable ) {
@@ -605,58 +604,83 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Plugins
-	// 阴影插件设置
+	// 	插件加载
+	// 阴影图插件
 	var shadowMapPlugin = new THREE.ShadowMapPlugin( this, lights, _webglObjects, _webglObjectsImmediate );
-
-	// 火花插件设置
+	// 火花插件
 	var spritePlugin = new THREE.SpritePlugin( this, sprites );
-	// 透镜插件设置
+	// 透镜插件
 	var lensFlarePlugin = new THREE.LensFlarePlugin( this, lensFlares );
 
 	// API
-
+	/**
+	 * @desc 获取WebGL上下文对象
+	 * @returns {*}
+	 */
 	this.getContext = function () {
 
 		return _gl;
 
 	};
-
+	/**
+	 * @desc 获取是否支持顶点纹理
+	 * @returns {boolean}
+	 */
 	this.supportsVertexTextures = function () {
 
 		return _supportsVertexTextures;
 
 	};
-
+	/**
+	 * @desc 获取是否支持浮点纹理
+	 * @returns {boolean}
+	 */
 	this.supportsFloatTextures = function () {
 
 		return extensions.get( 'OES_texture_float' );
 
 	};
-
+	/**
+	 * @desc 获取是否支持导数
+	 * @returns {boolean}
+	 */
 	this.supportsStandardDerivatives = function () {
 
 		return extensions.get( 'OES_standard_derivatives' );
 
 	};
-
+	/**
+	 * @desc 获取是否支持S3TC压缩纹理
+	 * @returns {boolean}
+	 */
 	this.supportsCompressedTextureS3TC = function () {
 
 		return extensions.get( 'WEBGL_compressed_texture_s3tc' );
 
 	};
-
+	/**
+	 * @desc 获取是否支持PVRTC压缩纹理
+	 * @returns {boolean}
+	 */
 	this.supportsCompressedTexturePVRTC = function () {
 
 		return extensions.get( 'WEBGL_compressed_texture_pvrtc' );
 
 	};
-
+	/**
+	 * @desc 获取是否支持最大最小混合
+	 * @returns {boolean}
+	 */
 	this.supportsBlendMinMax = function () {
 
 		return extensions.get( 'EXT_blend_minmax' );
 
 	};
-
+	/**
+	 * @function
+	 * @desc 获取各项异性参数
+	 * @returns {*}
+	 */
 	this.getMaxAnisotropy = ( function () {
 
 		var value;
@@ -678,13 +702,21 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	} )();
-
+	/**
+	 * @desc 获取精度值
+	 * @returns {*}
+	 */
 	this.getPrecision = function () {
 
 		return _precision;
 
 	};
-
+	/**
+	 * @desc 重新设置画布尺寸
+	 * @param {number} width 画布宽度
+	 * @param {number} height 画布高度
+	 * @param {boolean} updateStyle 是否更新像素
+	 */
 	this.setSize = function ( width, height, updateStyle ) {
 
 		_canvas.width = width * this.devicePixelRatio;
@@ -700,7 +732,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 		this.setViewport( 0, 0, width, height );
 
 	};
-
+	/**
+	 * @desc 设置窗口从x，y到(x + width, y + height)
+	 * @param {number} x 起点X坐标
+	 * @param {number} y 起点Y坐标
+	 * @param {number} width 窗口宽度
+	 * @param {number} height 窗口高度
+	 */
 	this.setViewport = function ( x, y, width, height ) {
 
 		_viewportX = x * this.devicePixelRatio;
@@ -712,7 +750,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_gl.viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
 
 	};
-
+	/**
+	 * @desc 设置裁剪区域从x，y到(x + width, y + height)
+	 * @param {number} x 起点X坐标
+	 * @param {number} y 起点Y坐标
+	 * @param {number} width 窗口宽度
+	 * @param {number} height 窗口高度
+	 */
 	this.setScissor = function ( x, y, width, height ) {
 
 		_gl.scissor(
@@ -723,7 +767,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		);
 
 	};
-
+	/**
+	 * @desc 是否开启裁剪测试，开启后则裁剪区外部分不参与渲染
+	 * @param {boolean} enable
+	 */
 	this.enableScissorTest = function ( enable ) {
 
 		enable ? _gl.enable( _gl.SCISSOR_TEST ) : _gl.disable( _gl.SCISSOR_TEST );
@@ -731,7 +778,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Clearing
-
+	/**
+	 * @desc 设置清屏颜色
+	 * @param {THREE.Color} color 颜色值
+	 * @param {float} alpha 透明度
+	 */
 	this.setClearColor = function ( color, alpha ) {
 
 		_clearColor.set( color );
@@ -740,26 +791,39 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_gl.clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 
 	};
-
+	/**
+	 * @ingore
+	 */
 	this.setClearColorHex = function ( hex, alpha ) {
 
 		console.warn( 'THREE.WebGLRenderer: .setClearColorHex() is being removed. Use .setClearColor() instead.' );
 		this.setClearColor( hex, alpha );
 
 	};
-
+	/**
+	 * @desc 获取清屏颜色
+	 * @returns {THREE.Color}
+	 */
 	this.getClearColor = function () {
 
 		return _clearColor;
 
 	};
-
+	/**
+	 * @desc 获取清屏透明度
+	 * @returns {float}
+	 */
 	this.getClearAlpha = function () {
 
 		return _clearAlpha;
 
 	};
-
+	/**
+	 * @desc 清屏操作
+	 * @param {boolean} color 是否清理颜色 ，默认 true
+	 * @param {boolean} depth 是否清理深度 ，默认 true
+	 * @param {boolean} stencil 是否清理模板 ，默认 true
+	 */
 	this.clear = function ( color, depth, stencil ) {
 
 		var bits = 0;
@@ -771,25 +835,33 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_gl.clear( bits );
 
 	};
-
+	/**
+	 * @desc 清理屏幕颜色
+	 */
 	this.clearColor = function () {
 
 		_gl.clear( _gl.COLOR_BUFFER_BIT );
 
 	};
-
+	/**
+	 * @desc 清理屏幕深度
+	 */
 	this.clearDepth = function () {
 
 		_gl.clear( _gl.DEPTH_BUFFER_BIT );
 
 	};
-
+	/**
+	 * @desc 清理屏幕模板
+	 */
 	this.clearStencil = function () {
 
 		_gl.clear( _gl.STENCIL_BUFFER_BIT );
 
 	};
-
+	/**
+	 * @desc 清理渲染目标
+	 */
 	this.clearTarget = function ( renderTarget, color, depth, stencil ) {
 
 		this.setRenderTarget( renderTarget );
@@ -798,7 +870,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Reset
-
+	/**
+	 * @desc 重置gl状态
+	 */
 	this.resetGLState = function () {
 
 		_currentProgram = null;
@@ -817,7 +891,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Buffer allocation
-
+	/**
+	 * @desc 创建粒子对象
+	 * @param {THREE.Geometry} geometry 几何属性对象
+	 */
 	function createParticleBuffers ( geometry ) {
 
 		geometry.__webglVertexBuffer = _gl.createBuffer();
@@ -826,7 +903,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_this.info.memory.geometries ++;
 
 	};
-
+	/**
+	 * @desc 创建线对象
+	 * @param {THREE.Geometry} geometry 几何属性对象
+	 */
 	function createLineBuffers ( geometry ) {
 
 		geometry.__webglVertexBuffer = _gl.createBuffer();
@@ -836,7 +916,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_this.info.memory.geometries ++;
 
 	};
-
+	/**
+	 * @desc 创建mesh对象
+	 * @param {THREE.Geometry} geometry 几何属性对象
+	 */
 	function createMeshBuffers ( geometryGroup ) {
 
 		geometryGroup.__webglVertexBuffer = _gl.createBuffer();
@@ -883,7 +966,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Events
-
+	/**
+	 * @desc 对象被移除的事件触发
+	 * @param {*} event 事件
+	 */
 	var onObjectRemoved = function ( event ) {
 
 		var object = event.target;
@@ -897,7 +983,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		} );
 
 	};
-
+	/**
+	 * @desc 几何对象被销毁事件触发
+	 * @param {*} event 事件
+	 */
 	var onGeometryDispose = function ( event ) {
 
 		var geometry = event.target;
@@ -907,7 +996,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		deallocateGeometry( geometry );
 
 	};
-
+	/**
+	 * @desc 纹理对象被销毁事件触发
+	 * @param {*} event 事件
+	 */
 	var onTextureDispose = function ( event ) {
 
 		var texture = event.target;
@@ -920,7 +1012,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 
 	};
-
+	/**
+	 * @desc 渲染目标对象销毁事件触发
+	 * @param {*} event 事件
+	 */
 	var onRenderTargetDispose = function ( event ) {
 
 		var renderTarget = event.target;
@@ -932,7 +1027,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_this.info.memory.textures --;
 
 	};
-
+	/**
+	 * @desc 材质对象销毁事件触发
+	 * @param {*} event 事件
+	 */
 	var onMaterialDispose = function ( event ) {
 
 		var material = event.target;
@@ -944,9 +1042,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Buffer deallocation
-
+	/**
+	 * @desc 显存buffer的删除
+	 * @param {THREE.Geometry} geometry 几何对象
+	 */
 	var deleteBuffers = function ( geometry ) {
-	
+
+		// 定义需要删除的buffer列表
 		var buffers = [
 			'__webglVertexBuffer',
 			'__webglNormalBuffer',
@@ -964,6 +1066,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			'__webglLineDistanceBuffer'
 		];
 
+		// 依次删除列表中存在的buffer
 		for ( var i = 0, l = buffers.length; i < l; i ++ ) {
 
 			var name = buffers[ i ];
@@ -979,7 +1082,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 		// custom attributes
-
+		// 删除自定义的属性
 		if ( geometry.__webglCustomAttributesList !== undefined ) {
 
 			for ( var name in geometry.__webglCustomAttributesList ) {
@@ -995,7 +1098,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_this.info.memory.geometries --;
 
 	};
-
+	/**
+	 * @desc 显存buffer的删除
+	 * @param {THREE.Geometry} geometry 几何对象
+	 */
 	var deallocateGeometry = function ( geometry ) {
 
 		delete geometry.__webglInit;
@@ -1071,7 +1177,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_currentGeometryGroupHash = - 1;
 
 	};
-
+	/**
+	 * @desc 显存纹理buffer的删除
+	 * @param {THREE.Texture} texture 几何对象
+	 */
 	var deallocateTexture = function ( texture ) {
 
 		if ( texture.image && texture.image.__webglTextureCube ) {
@@ -1096,7 +1205,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 显存渲染目标buffer的删除
+	 * @param {THREE.RenderTarget} renderTarget 几何对象
+	 */
 	var deallocateRenderTarget = function ( renderTarget ) {
 
 		if ( ! renderTarget || renderTarget.__webglTexture === undefined ) return;
@@ -1125,7 +1237,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		delete renderTarget.__webglRenderbuffer;
 
 	};
-
+	/**
+	 * @desc 材质对象的删除，显存的program对象删除
+	 * @param {THREE.Material} material 几何对象
+	 */
 	var deallocateMaterial = function ( material ) {
 
 		var program = material.program.program;
@@ -1190,7 +1305,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Buffer initialization
-
+	/**
+	 * @desc 初始化自定义属性对象
+	 * @param {THREE.Object3D} object
+	 */
 	function initCustomAttributes ( object ) {
 
 		var geometry = object.geometry;
@@ -1239,7 +1357,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 初始化粒子对象
+	 * @param {THREE.Geometry} geometry	几何对象
+	 * @param {THREE.Object3D} object 三维对象
+	 */
 	function initParticleBuffers ( geometry, object ) {
 
 		var nvertices = geometry.vertices.length;
@@ -1254,7 +1376,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		initCustomAttributes( object );
 
 	};
-
+	/**
+	 * @desc 初始化线对象
+	 * @param {THREE.Geometry} geometry	几何对象
+	 * @param {THREE.Object3D} object 三维对象
+	 */
 	function initLineBuffers ( geometry, object ) {
 
 		var nvertices = geometry.vertices.length;
@@ -1268,7 +1394,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		initCustomAttributes( object );
 
 	};
-
+	/**
+	 * @desc 初始化mesh对象
+	 * @param {THREE.Geometry} geometryGroup	几何对象组
+	 * @param {THREE.Object3D} object 三维对象
+	 */
 	function initMeshBuffers ( geometryGroup, object ) {
 
 		var geometry = object.geometry,
@@ -1397,7 +1527,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 		geometryGroup.__inittedArrays = true;
 
 	};
-
+	/**
+	 * @desc 获取对象材质
+	 * @param {THREE.Object3D} object	三维对象
+	 * @param {THREE.Geometry} geometryGroup 几何对象数组
+	 * @returns {*}
+	 */
 	function getBufferMaterial( object, geometryGroup ) {
 
 		return object.material instanceof THREE.MeshFaceMaterial
@@ -1405,7 +1540,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 			 : object.material;
 
 	};
-
+	/**
+	 * @desc 材质是否支持平滑纹理
+	 * @param {THREE.Material} material
+	 * @returns {boolean}
+	 */
 	function materialNeedsSmoothNormals ( material ) {
 
 		return material && material.shading !== undefined && material.shading === THREE.SmoothShading;
@@ -1413,7 +1552,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Buffer setting
-
+	/**
+	 * @desc 设置粒子对象的buffer
+	 * @param {THREE.Geometry} geometry 粒子几何对象
+	 * @param {number} hint 数据预期使用类型：GL_STREAM_DRAW, GL_STATIC_DRAW, or GL_DYNAMIC_DRAW
+ 	 * @param {THREE.Object3D} object
+	 */
 	function setParticleBuffers ( geometry, hint, object ) {
 
 		var v, c, vertex, offset, index, color,
@@ -1734,7 +1878,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 设置线对象的buffer
+	 * @param {THREE.Geometry} geometry 线几何对象
+	 * @param {number} hint 数据预期使用类型：GL_STREAM_DRAW, GL_STATIC_DRAW, or GL_DYNAMIC_DRAW
+	 */
 	function setLineBuffers ( geometry, hint ) {
 
 		var v, c, d, vertex, offset, color,
@@ -1906,7 +2054,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 设置mesh对象的buffer
+	 * @param {THREE.Geometry} geometryGroup mesh几何对象
+	 * @param {THREE.Object3D} object
+	 * @param {number} hint 数据预期使用类型：GL_STREAM_DRAW, GL_STATIC_DRAW, or GL_DYNAMIC_DRAW
+	 * @param {boolean} dispose  创建后是否删除内存buffer
+	 * @param {THREE.Material} 对象材质
+	 */
 	function setMeshBuffers( geometryGroup, object, hint, dispose, material ) {
 
 		if ( ! geometryGroup.__inittedArrays ) {
@@ -2705,7 +2860,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 设置自定义对象的buffer
+	 * @param {THREE.Geometry} geometry 几何对象
+	 */
 	function setDirectBuffers( geometry ) {
 
 		var attributes = geometry.attributes;
@@ -2739,7 +2897,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Buffer rendering
-
+	/**
+	 * @desc 立即渲染物体渲染
+	 * @param {THREE.Object3D} object 三维对象
+	 * @param {THREE.WebGLProgram} program 渲染shader组
+	 * @param {THREE.Material} material 渲染材质
+	 */
 	this.renderBufferImmediate = function ( object, program, material ) {
 
 		initAttributes();
@@ -2836,7 +2999,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 		object.count = 0;
 
 	};
-
+	/**
+	 * @desc 加载顶点属性值进shader
+	 * @param {THREE.Material} material 渲染材质
+	 * @param {THREE.WebGLProgram} program 渲染shader组
+	 * @param {THREE.Geometry} geometry 几何对象
+	 * @param {number} startIndex 开始位置索引
+	 */
 	function setupVertexAttributes( material, program, geometry, startIndex ) {
 
 		var geometryAttributes = geometry.attributes;
@@ -3787,7 +3956,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	/**
-	 * @desc 场景内的对象分类
+	 * @desc 场景内的对象分类<br />
+	 * 分为光照，闪光，透镜，普通等几类
 	 * @param {THREE.Scene} scene 场景对象
 	 * @param {THREE.Object3D} object 3D对象
 	 */
@@ -3864,10 +4034,21 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 渲染三维对象<br />
+	 * 只是整理对象，并没有真正渲染，最后会调用renderBuffer
+	 * @param {THREE.Mesh[]} renderList 三维对象列表
+	 * @param {THREE.Camera} camera 相机
+	 * @param {THREE.Light[]}lights 光源对象
+	 * @param {THREE.Fog} fog 雾对象
+	 * @param {boolean} useBlending 是否使用混合
+	 * @param {THREE.Material} overrideMaterial 强制使用的材质
+	 */
 	function renderObjects( renderList, camera, lights, fog, useBlending, overrideMaterial ) {
 
 		var material;
 
+		// 循环对象列表
 		for ( var i = renderList.length - 1; i !== - 1; i -- ) {
 
 			var webglObject = renderList[ i ];
@@ -3875,8 +4056,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 			var object = webglObject.object;
 			var buffer = webglObject.buffer;
 
+			// 根据相机更新对象
 			setupMatrices( object, camera );
 
+			// 设置材质
 			if ( overrideMaterial ) {
 
 				material = overrideMaterial;
@@ -3887,8 +4070,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 				if ( ! material ) continue;
 
+				// 设置混合参数
 				if ( useBlending ) _this.setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst );
 
+				// 深度参数
 				_this.setDepthTest( material.depthTest );
 				_this.setDepthWrite( material.depthWrite );
 				setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
@@ -3897,6 +4082,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			_this.setMaterialFaces( material );
 
+			// 渲染对象
 			if ( buffer instanceof THREE.BufferGeometry ) {
 
 				_this.renderBufferDirect( camera, lights, fog, material, buffer, object );
@@ -3910,7 +4096,17 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 渲染即时三维对象<br />
+	 * 最后的渲染会调用renderImmediateObject
+	 * @param {THREE.Mesh[]} renderList 三维对象列表
+	 * @param {number} materialType 材质类型
+	 * @param {THREE.Camera} camera 相机
+	 * @param {THREE.Light[]}lights 光源对象
+	 * @param {THREE.Fog} fog 雾对象
+	 * @param {boolean} useBlending 是否使用混合
+	 * @param {THREE.Material} overrideMaterial 强制使用的材质
+	 */
 	function renderObjectsImmediate ( renderList, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
 
 		var material;
@@ -3948,14 +4144,25 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 真正渲染即时对象
+	 * @param {THREE.Camera} camera 相机
+	 * @param {THREE.Light[]}lights 光源对象
+	 * @param {THREE.Fog} fog 雾对象
+	 * @param {THREE.Material} material 材质
+	 * @param {THREE.Object3D} object
+	 */
 	this.renderImmediateObject = function ( camera, lights, fog, material, object ) {
 
+		// 根据渲染的对象生成Shader的program
 		var program = setProgram( camera, lights, fog, material, object );
 
 		_currentGeometryGroupHash = - 1;
 
+		// 设置材质面
 		_this.setMaterialFaces( material );
 
+		// 渲染
 		if ( object.immediateRenderCallback ) {
 
 			object.immediateRenderCallback( program, _gl, _frustum );
@@ -3968,6 +4175,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 
+	/**
+	 * @desc 即时对象的材质透明反转
+	 * @param globject
+	 */
 	function unrollImmediateBufferMaterial ( globject ) {
 
 		var object = globject.object,
@@ -3987,6 +4198,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 普通对象的材质透明反转
+	 * @param globject
+	 */
 	function unrollBufferMaterial ( globject ) {
 
 		var object = globject.object;
@@ -4031,8 +4246,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 初始化渲染对象
+	 * @param {THREE.Object3D} object 对象
+	 * @param {THREE.Scene} scene 场景
+	 */
 	function initObject( object, scene ) {
 
+		// 矩阵信息初始化 及 删除事件添加
 		if ( object.__webglInit === undefined ) {
 
 			object.__webglInit = true;
@@ -4043,6 +4264,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
+		// 几何信息初始化
 		var geometry = object.geometry;
 
 		if ( geometry === undefined ) {
@@ -4060,10 +4282,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else if ( object instanceof THREE.Mesh ) {
 
+				// mesh对象初始化
 				initGeometryGroups( scene, object, geometry );
 
 			} else if ( object instanceof THREE.Line ) {
 
+				// 线对象初始化
 				if ( geometry.__webglVertexBuffer === undefined ) {
 
 					createLineBuffers( geometry );
@@ -4077,6 +4301,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else if ( object instanceof THREE.PointCloud ) {
 
+				// 点云对象初始化
 				if ( geometry.__webglVertexBuffer === undefined ) {
 
 					createParticleBuffers( geometry );
@@ -4095,6 +4320,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			object.__webglActive = true;
 
+			// 添加buffer至渲染列表
 			if ( object instanceof THREE.Mesh ) {
 
 				if ( geometry instanceof THREE.BufferGeometry ) {
@@ -4132,6 +4358,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 	var geometryGroups = {};
 	var geometryGroupCounter = 0;
 
+	/**
+	 * @desc 根据对几何对象打组
+	 * @param {THREE.Geometry} geometry 几何信息
+	 * @param {boolean} usesFaceMaterial 是否使用面纹理
+	 * @returns {*}
+	 */
 	function makeGroups( geometry, usesFaceMaterial ) {
 
 		var maxVerticesInGroup = extensions.get( 'OES_element_index_uint' ) ? 4294967296 : 65535;
@@ -4206,6 +4438,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 初始化几何对象组
+	 * @param {THREE.Scene} scene 场景
+	 * @param {THREE.Object3D} object 对象
+	 * @param {THREE.Geometry} geometry 几何信息
+	 */
 	function initGeometryGroups( scene, object, geometry ) {
 
 		var material = object.material, addBuffers = false;
@@ -4263,6 +4501,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 添加渲染buffer到组内
+	 * @param {THREE.Object3D[]} objlist
+	 * @param {*} buffer
+	 * @param {THREE.Object3D} object
+	 */
 	function addBuffer( objlist, buffer, object ) {
 
 		var id = object.id;
@@ -4278,7 +4522,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 		);
 
 	};
-
+	/**
+	 * @desc 添加立即渲染buffer到组内
+	 * @param {THREE.Object3D[]} objlist
+	 * @param {*} buffer
+	 * @param {THREE.Object3D} object
+	 */
 	function addBufferImmediate( objlist, object ) {
 
 		objlist.push(
@@ -4294,7 +4543,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Objects updates
-
+	/**
+	 * @desc 对象更新，需要重新生成buffer
+	 * @param {THREE.Object3D} object 需要重新生成Buffer的对象
+	 * @param {THREE.Scene} scene 场景
+	 */
 	function updateObject( object, scene ) {
 
 		var geometry = object.geometry, customAttributesDirty, material;
@@ -4390,7 +4643,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Objects updates - custom attributes check
-
+	/**
+	 * @desc 检查是否需要更新对象
+	 * @param {THREE.Material} material 材质
+	 * @returns {boolean}
+	 */
 	function areCustomAttributesDirty( material ) {
 
 		for ( var name in material.attributes ) {
@@ -4403,6 +4660,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 清除对象需要更新的标记位
+	 * @param material
+	 */
 	function clearCustomAttributes( material ) {
 
 		for ( var name in material.attributes ) {
@@ -4414,7 +4675,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Objects removal
-
+	/**
+	 * @desc 对象的删除
+	 * @param {THREE.Object3D} object
+	 */
 	function removeObject( object ) {
 
 		if ( object instanceof THREE.Mesh  ||
@@ -4437,6 +4701,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 对象从渲染列表中删除
+	 * @param {THREE.Object3D[]} objlist
+	 * @param {THREE.Object3D} object
+	 */
 	function removeInstances( objlist, object ) {
 
 		for ( var o = objlist.length - 1; o >= 0; o -- ) {
@@ -4452,13 +4721,20 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Materials
-
+	/**
+	 * @desc 初始化材质对象
+	 * @param {THREE.Material} material 需初始化材质对象
+	 * @param {THREE.Light[]} lights 灯光对象数组
+	 * @param {THREE.Fog} fog 雾对象
+	 * @param {THREE.Object3D} object 3D对象
+	 */
 	function initMaterial( material, lights, fog, object ) {
 
 		material.addEventListener( 'dispose', onMaterialDispose );
 
 		var shaderID;
 
+		// 根据材质类型，查找相应的shader
 		if ( material instanceof THREE.MeshDepthMaterial ) {
 
 			shaderID = 'depth';
@@ -4495,6 +4771,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		if ( shaderID ) {
 
+			// 如果shaderid有值，即已经内置，则从Shader.lib中查找相应的shader
 			var shader = THREE.ShaderLib[ shaderID ];
 
 			material.__webglShader = {
@@ -4505,6 +4782,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		} else {
 
+			// 如果没有内置，则使用材质内地shader
 			material.__webglShader = {
 				uniforms: material.uniforms,
 				vertexShader: material.vertexShader,
@@ -4516,10 +4794,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 		// heuristics to create shader parameters according to lights in the scene
 		// (not to blow over maxLights budget)
 
+		// 初始化灯光，阴影，骨骼
 		var maxLightCount = allocateLights( lights );
 		var maxShadows = allocateShadows( lights );
 		var maxBones = allocateBones( object );
 
+		// shader的参数列表赋值
 		var parameters = {
 
 			precision: _precision,
@@ -4572,6 +4852,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		// Generate code
 
+		// 生成shader代码
 		var chunks = [];
 
 		if ( shaderID ) {
@@ -4603,12 +4884,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
+		// 合并代码
 		var code = chunks.join();
 
 		var program;
 
 		// Check if code has been already compiled
-
+		// 检查shader是否存在
 		for ( var p = 0, pl = _programs.length; p < pl; p ++ ) {
 
 			var programInfo = _programs[ p ];
@@ -4624,6 +4906,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
+		// 创建新shader
 		if ( program === undefined ) {
 
 			program = new THREE.WebGLProgram( _this, code, material, parameters );
@@ -4679,6 +4962,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		material.uniformsList = [];
 
+		// uniforms列表赋值
 		for ( var u in material.__webglShader.uniforms ) {
 
 			var location = material.program.uniforms[ u ];
@@ -4691,10 +4975,20 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 设置program
+	 * @param {THREE.Camera} camera 相机
+	 * @param {THREE.Light[]} lights 灯光
+	 * @param {THREE.Fog} fog 雾
+	 * @param {THREE.Material} material 材质
+	 * @param {THREE.Object3D} object 3D对象
+	 * @returns {undefined|*}
+	 */
 	function setProgram( camera, lights, fog, material, object ) {
 
 		_usedTextureUnits = 0;
 
+		// 更新材质
 		if ( material.needsUpdate ) {
 
 			if ( material.program ) deallocateMaterial( material );
@@ -4742,6 +5036,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
+		// 投影矩阵传入
 		if ( refreshProgram || camera !== _currentCamera ) {
 
 			_gl.uniformMatrix4fv( p_uniforms.projectionMatrix, false, camera.projectionMatrix.elements );
@@ -4758,6 +5053,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			// load material specific uniforms
 			// (shader material also gets them for the sake of genericity)
 
+			// 相机矩阵传入
 			if ( material instanceof THREE.ShaderMaterial ||
 				 material instanceof THREE.MeshPhongMaterial ||
 				 material.envMap ) {
@@ -4771,6 +5067,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			}
 
+			// 世界矩阵传入
 			if ( material instanceof THREE.MeshPhongMaterial ||
 				 material instanceof THREE.MeshLambertMaterial ||
 				 material instanceof THREE.ShaderMaterial ||
@@ -4937,7 +5234,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Uniforms (refresh uniforms objects)
-
+	/**
+	 * @desc 更新普通uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsCommon ( uniforms, material ) {
 
 		uniforms.opacity.value = material.opacity;
@@ -5030,14 +5331,22 @@ THREE.WebGLRenderer = function ( parameters ) {
 		uniforms.useRefract.value = material.envMap && material.envMap.mapping instanceof THREE.CubeRefractionMapping;
 
 	}
-
+	/**
+	 * @desc 更新线类型uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsLine ( uniforms, material ) {
 
 		uniforms.diffuse.value = material.color;
 		uniforms.opacity.value = material.opacity;
 
 	}
-
+	/**
+	 * @desc 更新点uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsDash ( uniforms, material ) {
 
 		uniforms.dashSize.value = material.dashSize;
@@ -5045,7 +5354,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		uniforms.scale.value = material.scale;
 
 	}
-
+	/**
+	 * @desc 更新粒子uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsParticle ( uniforms, material ) {
 
 		uniforms.psColor.value = material.color;
@@ -5056,7 +5369,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		uniforms.map.value = material.map;
 
 	}
-
+	/**
+	 * @desc 更新雾uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsFog ( uniforms, fog ) {
 
 		uniforms.fogColor.value = fog.color;
@@ -5073,7 +5390,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 更新泊松uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsPhong ( uniforms, material ) {
 
 		uniforms.shininess.value = material.shininess;
@@ -5099,7 +5420,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 更新兰伯特uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsLambert ( uniforms, material ) {
 
 		if ( _this.gammaInput ) {
@@ -5121,7 +5446,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 更新灯光uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsLights ( uniforms, lights ) {
 
 		uniforms.ambientLightColor.value = lights.ambient;
@@ -5147,7 +5476,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// If uniforms are marked as clean, they don't need to be loaded to the GPU.
-
+	/**
+	 * @desc 设置灯光uniform对象是否需要更新
+	 * @param {*} uniforms
+	 * @param {boolean} boolean
+	 */
 	function markUniformsLightsNeedsUpdate ( uniforms, boolean ) {
 
 		uniforms.ambientLightColor.needsUpdate = boolean;
@@ -5171,7 +5504,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		uniforms.hemisphereLightDirection.needsUpdate = boolean;
 
 	}
-
+	/**
+	 * @desc 更新阴影uniform对象
+	 * @param {*} uniforms
+	 * @param {THREE.Material} material
+	 */
 	function refreshUniformsShadow ( uniforms, lights ) {
 
 		if ( uniforms.shadowMatrix ) {
@@ -5205,7 +5542,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Uniforms (load to GPU)
-
+	/**
+	 * @desc 加载Uniform矩阵
+	 * @param {*} uniforms
+	 * @param {THREE.Object3d} object
+	 */
 	function loadUniformsMatrices ( uniforms, object ) {
 
 		_gl.uniformMatrix4fv( uniforms.modelViewMatrix, false, object._modelViewMatrix.elements );
@@ -5218,6 +5559,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 获取纹理数目
+	 * @returns {number}
+	 */
 	function getTextureUnit() {
 
 		var textureUnit = _usedTextureUnits;
@@ -5234,6 +5579,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 加载通用uniform
+	 * @param {*} uniforms
+	 */
 	function loadUniformsGeneric ( uniforms ) {
 
 		var texture, textureUnit, offset;
@@ -5570,6 +5919,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 根据相机矩阵更新对象位置
+	 * @param {THREE.Object3D} object
+	 * @param {THREE.Camera} camera
+	 */
 	function setupMatrices ( object, camera ) {
 
 		object._modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld );
@@ -5578,7 +5932,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	//
-
+	/**
+	 * @desc 设置颜色参数
+	 * @param {float[]} array 颜色值数组（一维）
+	 * @param {number} offset 数组起始偏移量
+	 * @param {THREE.Color} color 颜色值
+	 * @param {float} intensitySq 差值参数
+	 */
 	function setColorGamma( array, offset, color, intensitySq ) {
 
 		array[ offset ]     = color.r * color.r * intensitySq;
@@ -5586,7 +5946,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 		array[ offset + 2 ] = color.b * color.b * intensitySq;
 
 	}
-
+	/**
+	 * @desc 设置颜色线性差值
+	 * @param {float[]} array 颜色值数组（一维）
+	 * @param {number} offset 数组起始偏移量
+	 * @param {THREE.Color} color 颜色值
+	 * @param {float} intensity 差值参数
+	 */
 	function setColorLinear( array, offset, color, intensity ) {
 
 		array[ offset ]     = color.r * intensity;
@@ -5595,6 +5961,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 更新光线
+	 * @param {THREE.Light[]} lights 光线集合
+	 */
 	function setupLights ( lights ) {
 
 		var l, ll, light, n,
@@ -5822,7 +6192,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// GL state setting
-
+	/**
+	 * @desc 设置面的裁剪定义
+	 * @param {number} cullFace 裁剪面定义
+	 * @param {number} frontFaceDirection 面的点时钟方向
+	 */
 	this.setFaceCulling = function ( cullFace, frontFaceDirection ) {
 
 		if ( cullFace === THREE.CullFaceNone ) {
@@ -5860,7 +6234,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 设置材质面的裁剪方式
+	 * @param {THREE.Material} material
+	 */
 	this.setMaterialFaces = function ( material ) {
 
 		var doubleSided = material.side === THREE.DoubleSide;
@@ -5899,7 +6276,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 设置深度测试参数
+	 * @param {number} depthTest
+	 */
 	this.setDepthTest = function ( depthTest ) {
 
 		if ( _oldDepthTest !== depthTest ) {
@@ -5919,7 +6299,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 设置深度可写参数
+	 * @param {number} depthWrite
+	 */
 	this.setDepthWrite = function ( depthWrite ) {
 
 		if ( _oldDepthWrite !== depthWrite ) {
@@ -5930,7 +6313,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 设置线宽参数
+	 * @param {number} width
+	 */
 	function setLineWidth ( width ) {
 
 		if ( width !== _oldLineWidth ) {
@@ -5943,6 +6329,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 设置多边形便宜索引
+	 * @param {boolean} polygonoffset 多边形偏移量
+	 * @param {number} factor 参数定义
+	 * @param {number} units 偏移值
+	 */
 	function setPolygonOffset ( polygonoffset, factor, units ) {
 
 		if ( _oldPolygonOffset !== polygonoffset ) {
@@ -5972,6 +6364,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 设置混合值
+	 * @param {number} blending 混合定义
+	 * @param {number} blendEquation 混合模式
+	 * @param {*} blendSrc 混合源
+	 * @param {*} blendDst 混合目标
+	 */
 	this.setBlending = function ( blending, blendEquation, blendSrc, blendDst ) {
 
 		if ( blending !== _oldBlending ) {
@@ -6046,7 +6445,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	// Textures
-
+	/**
+	 * @desc 设置纹理参数
+	 * @param {number} textureType 纹理类型
+	 * @param {THREE.Texture} texture 纹理
+	 * @param {boolean} isImagePowerOfTwo 图片是否是2的幂
+	 */
 	function setTextureParameters ( textureType, texture, isImagePowerOfTwo ) {
 
 		var extension;
@@ -6084,6 +6488,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 纹理更新
+	 * @param {THREE.Texture} texture
+	 */
 	this.uploadTexture = function ( texture ) {
 
 		if ( texture.__webglInit === undefined ) {
@@ -6196,7 +6604,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		if ( texture.onUpdate ) texture.onUpdate();
 
 	};
-
+	/**
+	 * @desc 设置纹理
+	 * @param {THREE.Texture} texture
+	 * @param {number} slot 纹理序号
+	 */
 	this.setTexture = function ( texture, slot ) {
 
 		_gl.activeTexture( _gl.TEXTURE0 + slot );
@@ -6212,7 +6624,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	};
-
+	/**
+	 * @desc 纹理最大尺寸约束
+	 * @param {Image} image 图片
+	 * @param {number} maxSize 最大尺寸
+	 * @returns {*}
+	 */
 	function clampToMaxSize ( image, maxSize ) {
 
 		if ( image.width > maxSize || image.height > maxSize ) {
@@ -6239,6 +6656,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 设置立方体纹理
+	 * @param {THREE.Texture} texture 纹理
+	 * @param {number} slot 纹理序号
+	 */
 	function setCubeTexture ( texture, slot ) {
 
 		if ( texture.image.length === 6 ) {
@@ -6353,6 +6775,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 设置动态立方体纹理
+	 * @param {THREE.Texture} texture 纹理
+	 * @param {number} slot 纹理序号
+	 */
 	function setCubeTextureDynamic ( texture, slot ) {
 
 		_gl.activeTexture( _gl.TEXTURE0 + slot );
@@ -6361,7 +6788,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Render targets
-
+	/**
+	 * @desc 设置帧缓冲buffer
+	 * @param {THREE.FrameBuffer} framebuffer 帧缓存
+	 * @param {THREE.WebGLRenderTarget} renderTarget 渲染目标
+	 * @param {THREE.Texture} textureTarget 渲染目标纹理
+	 */
 	function setupFrameBuffer ( framebuffer, renderTarget, textureTarget ) {
 
 		_gl.bindFramebuffer( _gl.FRAMEBUFFER, framebuffer );
@@ -6369,6 +6801,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 
+	/**
+	 * @desc 设置渲染buffer
+	 * @param {*} renderbuffer 渲染buffer
+	 * @param {THREE.WebGLRenderTarget} renderTarget 渲染目标
+	 */
 	function setupRenderBuffer ( renderbuffer, renderTarget  ) {
 
 		_gl.bindRenderbuffer( _gl.RENDERBUFFER, renderbuffer );
@@ -6396,7 +6833,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 设置渲染目标
+	 * @param {THREE.WebGLRenderTarget} renderTarget 渲染目标
+	 */
 	this.setRenderTarget = function ( renderTarget ) {
 
 		var isCube = ( renderTarget instanceof THREE.WebGLRenderTargetCube );
@@ -6545,7 +6985,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		_currentHeight = height;
 
 	};
-
+	/**
+	 * @desc 更新渲染目标的Mipmap
+	 * @param {THREE.WebGLRenderTarget} renderTarget 渲染目标
+	 */
 	function updateRenderTargetMipmap ( renderTarget ) {
 
 		if ( renderTarget instanceof THREE.WebGLRenderTargetCube ) {
@@ -6565,7 +7008,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Fallback filters for non-power-of-2 textures
-
+	/**
+	 * @desc 设置纹理过滤类型
+	 * @param {number} f 取值为THREE.NearestFilter， THREE.NearestMipMapNearestFilter， THREE.NearestMipMapLinearFilter
+	 * @returns {number}
+	 */
 	function filterFallback ( f ) {
 
 		if ( f === THREE.NearestFilter || f === THREE.NearestMipMapNearestFilter || f === THREE.NearestMipMapLinearFilter ) {
@@ -6579,7 +7026,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Map three.js constants to WebGL constants
-
+	/**
+	 * @desc three参数对应gl参数
+	 * @param {*} p
+	 * @returns {*}
+	 */
 	function paramThreeToGL ( p ) {
 
 		var extension;
@@ -6667,7 +7118,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	// Allocations
-
+	/**
+	 * @desc 分配骨骼动画空间
+	 * @param {THREE.Object3D} object 骨骼对象
+	 * @returns {number}
+	 */
 	function allocateBones ( object ) {
 
 		if ( _supportsBoneTextures && object && object.skeleton && object.skeleton.useVertexTexture ) {
@@ -6706,7 +7161,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 	}
-
+	/**
+	 * @desc 分配光照空间
+	 * @param {THREE.Light[]} lights 光照对象列表
+	 * @returns {number}
+	 */
 	function allocateLights( lights ) {
 
 		var dirLights = 0;
@@ -6730,7 +7189,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		return { 'directional': dirLights, 'point': pointLights, 'spot': spotLights, 'hemi': hemiLights };
 
 	}
-
+	/**
+	 * @desc 分配阴影对象空间
+	 * @param {THREE.Light[]} lights 光照对象列表
+	 * @returns {number}
+	 */
 	function allocateShadows( lights ) {
 
 		var maxShadows = 0;
