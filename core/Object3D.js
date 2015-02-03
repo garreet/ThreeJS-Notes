@@ -161,7 +161,7 @@ THREE.Object3D = function () {
 	 */
 	this.receiveShadow = false;
 	/**
-	 * @desc 是否支持平头界面体裁剪
+	 * @desc 是否需要平头界面体裁剪
 	 * @default true
 	 * @type {boolean}
 	 */
