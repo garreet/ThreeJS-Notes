@@ -917,11 +917,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 创建mesh对象
-	 * @param {THREE.Geometry} geometry 几何属性对象
+	 * @desc 创建mesh对象的空的GL显存buffer
+	 * @param {*} geometryGroup 几何属性对象
 	 */
 	function createMeshBuffers ( geometryGroup ) {
 
+		// 创建普通buffer
 		geometryGroup.__webglVertexBuffer = _gl.createBuffer();
 		geometryGroup.__webglNormalBuffer = _gl.createBuffer();
 		geometryGroup.__webglTangentBuffer = _gl.createBuffer();
@@ -936,7 +937,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		geometryGroup.__webglLineBuffer = _gl.createBuffer();
 
 		var m, ml;
-
+		// 创建可变顶点buffer
 		if ( geometryGroup.numMorphTargets ) {
 
 			geometryGroup.__webglMorphTargetsBuffers = [];
@@ -948,7 +949,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 创建可变法线buffer
 		if ( geometryGroup.numMorphNormals ) {
 
 			geometryGroup.__webglMorphNormalsBuffers = [];
@@ -1401,7 +1402,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 初始化mesh对象
+	 * @desc 分配Mesh中几何对象buffer的空间<br />
+	 * 并和Shader中的Attribute链接
 	 * @param {THREE.Geometry} geometryGroup	几何对象组
 	 * @param {THREE.Object3D} object 三维对象
 	 */
@@ -1410,31 +1412,31 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var geometry = object.geometry,
 			faces3 = geometryGroup.faces3,
 
-			nvertices = faces3.length * 3,
-			ntris     = faces3.length * 1,
-			nlines    = faces3.length * 3,
-
+			nvertices = faces3.length * 3,		// 顶点数目
+			ntris     = faces3.length * 1,		// 三角面数目
+			nlines    = faces3.length * 3,		// 边线数目
+			// 当前对象所使用材质
 			material = getBufferMaterial( object, geometryGroup );
 
-		geometryGroup.__vertexArray = new Float32Array( nvertices * 3 );
-		geometryGroup.__normalArray = new Float32Array( nvertices * 3 );
-		geometryGroup.__colorArray = new Float32Array( nvertices * 3 );
-		geometryGroup.__uvArray = new Float32Array( nvertices * 2 );
+		geometryGroup.__vertexArray = new Float32Array( nvertices * 3 );		// 顶点
+		geometryGroup.__normalArray = new Float32Array( nvertices * 3 );		// 法线
+		geometryGroup.__colorArray = new Float32Array( nvertices * 3 );			// 颜色
+		geometryGroup.__uvArray = new Float32Array( nvertices * 2 );			// uv
 
 		if ( geometry.faceVertexUvs.length > 1 ) {
-
+			// 第二组UV
 			geometryGroup.__uv2Array = new Float32Array( nvertices * 2 );
 
 		}
 
 		if ( geometry.hasTangents ) {
-
+			// 切线
 			geometryGroup.__tangentArray = new Float32Array( nvertices * 4 );
 
 		}
 
 		if ( object.geometry.skinWeights.length && object.geometry.skinIndices.length ) {
-
+			// 蒙皮
 			geometryGroup.__skinIndexArray = new Float32Array( nvertices * 4 );
 			geometryGroup.__skinWeightArray = new Float32Array( nvertices * 4 );
 
@@ -4365,13 +4367,16 @@ THREE.WebGLRenderer = function ( parameters ) {
 	var geometryGroupCounter = 0;
 
 	/**
-	 * @desc 根据对几何对象打组
+	 * @desc 根据材质和WebGL支持的最大顶点数目分组<br />
+	 * 材质分组，是为了减少批次<br />
+	 * 顶点分组，是为了防止超过gl支持的范围<br />
+	 * 其实还有根据gl的状态分组，避免频繁的状态切换，这里没有实现
 	 * @param {THREE.Geometry} geometry 几何信息
 	 * @param {boolean} usesFaceMaterial 是否使用面纹理
 	 * @returns {*}
 	 */
 	function makeGroups( geometry, usesFaceMaterial ) {
-
+		// 获取WebGL支持的最大顶点数目
 		var maxVerticesInGroup = extensions.get( 'OES_element_index_uint' ) ? 4294967296 : 65535;
 
 		var groupHash, hash_map = {};
@@ -4382,20 +4387,23 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var group;
 		var groups = {};
 		var groupsList = [];
-
+		// 遍历每一个三角面
 		for ( var f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
 
 			var face = geometry.faces[ f ];
 			var materialIndex = usesFaceMaterial ? face.materialIndex : 0;
 
+			// 根据材质索引添加材质hashmap
 			if ( ! ( materialIndex in hash_map ) ) {
 
 				hash_map[ materialIndex ] = { hash: materialIndex, counter: 0 };
 
 			}
 
+			// 根据hashmap的hash值及数目，生成group的hashkey
 			groupHash = hash_map[ materialIndex ].hash + '_' + hash_map[ materialIndex ].counter;
 
+			// 如果hashkey不在group中，添加group信息
 			if ( ! ( groupHash in groups ) ) {
 
 				group = {
@@ -4412,6 +4420,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			}
 
+			// 如果组内的顶点数目超过最大的GL支持顶点数目，则拆分，并把hashmap中的数目加1
 			if ( groups[ groupHash ].vertices + 3 > maxVerticesInGroup ) {
 
 				hash_map[ materialIndex ].counter += 1;
@@ -4457,7 +4466,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		if ( geometryGroups[ geometry.id ] === undefined || geometry.groupsNeedUpdate === true ) {
 
 			delete _webglObjects[ object.id ];
-
+			// 根据材质和WebGL支持的最大顶点数目分组
 			geometryGroups[ geometry.id ] = makeGroups( geometry, material instanceof THREE.MeshFaceMaterial );
 
 			geometry.groupsNeedUpdate = false;
@@ -4467,16 +4476,18 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var geometryGroupsList = geometryGroups[ geometry.id ];
 
 		// create separate VBOs per geometry chunk
-
+		// 每个分组分别创建显存buffer，VBO
 		for ( var i = 0, il = geometryGroupsList.length; i < il; i ++ ) {
 
 			var geometryGroup = geometryGroupsList[ i ];
 
 			// initialise VBO on the first access
-
+			// 第一次初始化gl显存buffer
 			if ( geometryGroup.__webglVertexBuffer === undefined ) {
 
+				// 创建空的gl显存buffer
 				createMeshBuffers( geometryGroup );
+				// 分配gl显存buffer的空间，并和shader中的Attribute链接
 				initMeshBuffers( geometryGroup, object );
 
 				geometry.verticesNeedUpdate = true;
@@ -4567,7 +4578,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			// check all geometry groups
 
 			if ( geometry.groupsNeedUpdate === true ) {
-
+				// 创建Mesh的几何信息组
 				initGeometryGroups( scene, object, geometry );
 
 			}
