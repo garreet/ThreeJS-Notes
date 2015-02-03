@@ -892,7 +892,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	// Buffer allocation
 	/**
-	 * @desc 创建粒子对象
+	 * @desc 创建粒子对象的gl显存buffer
 	 * @param {THREE.Geometry} geometry 几何属性对象
 	 */
 	function createParticleBuffers ( geometry ) {
@@ -904,14 +904,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 创建线对象
+	 * @desc 创建线对象的gl显存buffer
 	 * @param {THREE.Geometry} geometry 几何属性对象
 	 */
 	function createLineBuffers ( geometry ) {
 
-		geometry.__webglVertexBuffer = _gl.createBuffer();
-		geometry.__webglColorBuffer = _gl.createBuffer();
-		geometry.__webglLineDistanceBuffer = _gl.createBuffer();
+		geometry.__webglVertexBuffer = _gl.createBuffer();		// 顶点
+		geometry.__webglColorBuffer = _gl.createBuffer();		// 颜色
+		geometry.__webglLineDistanceBuffer = _gl.createBuffer();	// 线距离
 
 		_this.info.memory.geometries ++;
 
@@ -1313,7 +1313,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	// Buffer initialization
 	/**
-	 * @desc 初始化自定义属性对象
+	 * @desc 初始化对象中的自定义Attrubute<br />
+	 * 目前用在 THREE.Line 和 THREE.Particle 对象使用
 	 * @param {THREE.Object3D} object
 	 */
 	function initCustomAttributes ( object ) {
@@ -1365,7 +1366,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 初始化粒子对象
+	 * @desc 分配点云对象的buffer空间
 	 * @param {THREE.Geometry} geometry	几何对象
 	 * @param {THREE.Object3D} object 三维对象
 	 */
@@ -1384,20 +1385,20 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 初始化线对象
+	 * @desc 分配线对象的buffer空间
 	 * @param {THREE.Geometry} geometry	几何对象
 	 * @param {THREE.Object3D} object 三维对象
 	 */
 	function initLineBuffers ( geometry, object ) {
-
+		// 顶点数目
 		var nvertices = geometry.vertices.length;
 
-		geometry.__vertexArray = new Float32Array( nvertices * 3 );
-		geometry.__colorArray = new Float32Array( nvertices * 3 );
-		geometry.__lineDistanceArray = new Float32Array( nvertices * 1 );
+		geometry.__vertexArray = new Float32Array( nvertices * 3 );		// 顶点
+		geometry.__colorArray = new Float32Array( nvertices * 3 );		// 颜色
+		geometry.__lineDistanceArray = new Float32Array( nvertices * 1 );	// 线距离
 
 		geometry.__webglLineCount = nvertices;
-
+		// 初始化自定义参数
 		initCustomAttributes( object );
 
 	};
@@ -4297,10 +4298,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 				// 线对象渲染结构初始化
 				if ( geometry.__webglVertexBuffer === undefined ) {
-
+					// 创建线对象的gl显存buffer
 					createLineBuffers( geometry );
+					// 分配线对象的buffer空间
 					initLineBuffers( geometry, object );
-
+					// 各种初始化标记=true
 					geometry.verticesNeedUpdate = true;
 					geometry.colorsNeedUpdate = true;
 					geometry.lineDistancesNeedUpdate = true;
@@ -4311,8 +4313,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 				// 点云对象渲染结构初始化
 				if ( geometry.__webglVertexBuffer === undefined ) {
-
+					// 创建点云对象的gl显存buffer
 					createParticleBuffers( geometry );
+					// 分配点云对象的buffer空间
 					initParticleBuffers( geometry, object );
 
 					geometry.verticesNeedUpdate = true;
