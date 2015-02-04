@@ -3860,10 +3860,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		// 场景内的对象分类并生成渲染结构
 		projectObject( scene, scene );
 
-		// 把透明和不透明的对象分类
+		// 把透明和不透明的对象进行排序
 		if ( _this.sortObjects === true ) {
-
+			// 不透明对象，升序排列
 			opaqueObjects.sort( painterSortStable );
+			// 透明对象，降序排列
 			transparentObjects.sort( reversePainterSortStable );
 
 		}
@@ -3897,9 +3898,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 			var object = webglObject.object;
 
 			if ( object.visible ) {
-
+				// 根据相机矩阵设置对象的视矩阵和法线矩阵
 				setupMatrices( object, camera );
-
+				// 设置即时渲染对象的材质透明标记分类
 				unrollImmediateBufferMaterial( webglObject );
 
 			}
@@ -3965,7 +3966,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	/**
-	 * @desc 场景内的对象分类并生成渲染结构<br />
+	 * @desc 场景内的对象分类并生成渲染对象<br />
 	 * 分为光照，闪光，透镜，普通等几类
 	 * @param {THREE.Scene} scene 场景对象
 	 * @param {THREE.Object3D} object 3D对象
@@ -4005,19 +4006,20 @@ THREE.WebGLRenderer = function ( parameters ) {
 					for ( var i = 0, l = webglObjects.length; i < l; i ++ ) {
 
 						var webglObject = webglObjects[i];
-
+						// 根据渲染对象材质的 透明 属性分组
+						// 放到 transparentObjects 和 opaqueObjects 中
 						unrollBufferMaterial( webglObject );
-
+						// 渲染对象可以渲染标记
 						webglObject.render = true;
-
+						// 获取对象的深度信息
 						if ( _this.sortObjects === true ) {
 
 							if ( object.renderDepth !== null ) {
-
+								// 指定的深度信息
 								webglObject.z = object.renderDepth;
 
 							} else {
-
+								// 实时计算的深度信息
 								_vector3.setFromMatrixPosition( object.matrixWorld );
 								_vector3.applyProjection( _projScreenMatrix );
 
@@ -4034,7 +4036,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 遍历子对象，进行构建渲染对象
 		for ( var i = 0, l = object.children.length; i < l; i ++ ) {
 
 			projectObject( scene, object.children[ i ] );
@@ -4185,8 +4187,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 	};
 
 	/**
-	 * @desc 即时对象的材质透明反转
-	 * @param globject
+	 * @desc 即时渲染对象的材质透明赋值
+	 * @param {*} globject 即时渲染对象
 	 */
 	function unrollImmediateBufferMaterial ( globject ) {
 
@@ -4208,8 +4210,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	/**
-	 * @desc 普通对象的材质透明反转
-	 * @param globject
+	 * @desc 普通对象的材质透明分组
+	 * @param {*} globject 普通渲染对象
 	 */
 	function unrollBufferMaterial ( globject ) {
 
@@ -4220,7 +4222,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var material = object.material;
 
 		if ( material instanceof THREE.MeshFaceMaterial ) {
-
+			// 普通mesh材质
+			// 如果是buffergeometry，材质自定义
+			// 如果不是，使用对象所指定的材质索引
 			var materialIndex = geometry instanceof THREE.BufferGeometry ? 0 : buffer.materialIndex;
 
 			material = material.materials[ materialIndex ];
@@ -4238,7 +4242,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		} else if ( material ) {
-
+			// 其他对象使用对象定义的材质
 			globject.material = material;
 
 			if ( material.transparent ) {
@@ -5943,7 +5947,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	/**
-	 * @desc 根据相机矩阵更新对象位置
+	 * @desc 根据相机矩阵更新对象的视矩阵及法线矩阵
 	 * @param {THREE.Object3D} object
 	 * @param {THREE.Camera} camera
 	 */
@@ -7009,19 +7013,20 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 更新渲染目标的Mipmap
+	 * @desc 对渲染目标生成Mipmap<br />
+	 * 分为 立方体渲染目标 和 普通渲染目标
 	 * @param {THREE.WebGLRenderTarget} renderTarget 渲染目标
 	 */
 	function updateRenderTargetMipmap ( renderTarget ) {
 
 		if ( renderTarget instanceof THREE.WebGLRenderTargetCube ) {
-
+			// 立方体
 			_gl.bindTexture( _gl.TEXTURE_CUBE_MAP, renderTarget.__webglTexture );
 			_gl.generateMipmap( _gl.TEXTURE_CUBE_MAP );
 			_gl.bindTexture( _gl.TEXTURE_CUBE_MAP, null );
 
 		} else {
-
+			// 普通
 			_gl.bindTexture( _gl.TEXTURE_2D, renderTarget.__webglTexture );
 			_gl.generateMipmap( _gl.TEXTURE_2D );
 			_gl.bindTexture( _gl.TEXTURE_2D, null );
