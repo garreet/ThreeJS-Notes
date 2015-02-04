@@ -1562,7 +1562,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	// Buffer setting
 	/**
-	 * @desc 设置粒子对象的buffer
+	 * @desc 设置粒子对象的内存buffer和显存绑定
 	 * @param {THREE.Geometry} geometry 粒子几何对象
 	 * @param {number} hint 数据预期使用类型：GL_STREAM_DRAW, GL_STATIC_DRAW, or GL_DYNAMIC_DRAW
  	 * @param {THREE.Object3D} object
@@ -1888,7 +1888,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 	/**
-	 * @desc 设置线对象的buffer
+	 * @desc 设置线对象的内存buffer和显存绑定
 	 * @param {THREE.Geometry} geometry 线几何对象
 	 * @param {number} hint 数据预期使用类型：GL_STREAM_DRAW, GL_STATIC_DRAW, or GL_DYNAMIC_DRAW
 	 */
@@ -1917,7 +1917,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		i, il,
 		a, ca, cal, value,
 		customAttribute;
-
+		// 绑定顶点
 		if ( dirtyVertices ) {
 
 			for ( v = 0; v < vl; v ++ ) {
@@ -1936,7 +1936,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.bufferData( _gl.ARRAY_BUFFER, vertexArray, hint );
 
 		}
-
+		// 绑定颜色
 		if ( dirtyColors ) {
 
 			for ( c = 0; c < cl; c ++ ) {
@@ -1955,7 +1955,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.bufferData( _gl.ARRAY_BUFFER, colorArray, hint );
 
 		}
-
+		// 绑定线距离
 		if ( dirtyLineDistances ) {
 
 			for ( d = 0; d < dl; d ++ ) {
@@ -1968,7 +1968,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.bufferData( _gl.ARRAY_BUFFER, lineDistanceArray, hint );
 
 		}
-
+		// 绑定自定义Attribute
 		if ( customAttributes ) {
 
 			for ( i = 0, il = customAttributes.length; i < il; i ++ ) {
@@ -2064,12 +2064,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 	/**
-	 * @desc 设置mesh对象的buffer
+	 * @desc 设置mesh对象的buffer，把内存和显存链接
 	 * @param {THREE.Geometry} geometryGroup mesh几何对象
 	 * @param {THREE.Object3D} object
 	 * @param {number} hint 数据预期使用类型：GL_STREAM_DRAW, GL_STATIC_DRAW, or GL_DYNAMIC_DRAW
 	 * @param {boolean} dispose  创建后是否删除内存buffer
-	 * @param {THREE.Material} 对象材质
+	 * @param {THREE.Material} material 对象的材质
 	 */
 	function setMeshBuffers( geometryGroup, object, hint, dispose, material ) {
 
@@ -2078,7 +2078,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			return;
 
 		}
-
+		// 检查材质是否需要平滑法线
 		var needsSmoothNormals = materialNeedsSmoothNormals( material );
 
 		var f, fl, fi, face,
@@ -2157,7 +2157,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		morphTargets = geometry.morphTargets,
 		morphNormals = geometry.morphNormals;
-
+		// 绑定顶点数据
 		if ( dirtyVertices ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2188,7 +2188,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.bufferData( _gl.ARRAY_BUFFER, vertexArray, hint );
 
 		}
-
+		// 绑定可变顶点数据
 		if ( dirtyMorphTargets ) {
 
 			for ( vk = 0, vkl = morphTargets.length; vk < vkl; vk ++ ) {
@@ -2275,7 +2275,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 绑定蒙皮权重数据
 		if ( obj_skinWeights.length ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2339,7 +2339,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 绑定颜色数据
 		if ( dirtyColors ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2387,7 +2387,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 绑定切线数据
 		if ( dirtyTangents && geometry.hasTangents ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2423,7 +2423,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.bufferData( _gl.ARRAY_BUFFER, tangentArray, hint );
 
 		}
-
+		// 绑定法线数据
 		if ( dirtyNormals ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2467,7 +2467,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.bufferData( _gl.ARRAY_BUFFER, normalArray, hint );
 
 		}
-
+		// 绑定UV数据
 		if ( dirtyUvs && obj_uvs ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2499,7 +2499,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 绑定UV2数据
 		if ( dirtyUvs && obj_uvs2 ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2531,7 +2531,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 绑定索引数据
 		if ( dirtyElements ) {
 
 			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
@@ -2564,7 +2564,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.bufferData( _gl.ELEMENT_ARRAY_BUFFER, lineArray, hint );
 
 		}
-
+		// 自定义Attribute数据
 		if ( customAttributes ) {
 
 			for ( i = 0, il = customAttributes.length; i < il; i ++ ) {
@@ -2851,7 +2851,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 销毁内存数据
 		if ( dispose ) {
 
 			delete geometryGroup.__inittedArrays;
@@ -3973,33 +3973,33 @@ THREE.WebGLRenderer = function ( parameters ) {
 	function projectObject( scene, object ) {
 
 		if ( object.visible === false ) return;
-
+		// 场景和组对象不需要处理，只需要处理他们的子对象
 		if ( object instanceof THREE.Scene || object instanceof THREE.Group ) {
 
 			// skip
 
 		} else {
-
+			// 初始化对象
 			initObject( object, scene );
-
+			// 按对象类型分组
 			if ( object instanceof THREE.Light ) {
-
+				// 灯光组
 				lights.push( object );
 
 			} else if ( object instanceof THREE.Sprite ) {
-
+				// 闪光对象组
 				sprites.push( object );
 
 			} else if ( object instanceof THREE.LensFlare ) {
-
+				// 透镜对象组
 				lensFlares.push( object );
 
 			} else {
-
+				// 普通渲染对象组
 				var webglObjects = _webglObjects[ object.id ];
 
 				if ( webglObjects && ( object.frustumCulled === false || _frustum.intersectsObject( object ) === true ) ) {
-
+					// 更新对象
 					updateObject( object, scene );
 
 					for ( var i = 0, l = webglObjects.length; i < l; i ++ ) {
@@ -4302,7 +4302,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 					createLineBuffers( geometry );
 					// 分配线对象的buffer空间
 					initLineBuffers( geometry, object );
-					// 各种初始化标记=true
+					// 各种需要更新的标记=true，表示需要把内存buffer拷贝进显存
 					geometry.verticesNeedUpdate = true;
 					geometry.colorsNeedUpdate = true;
 					geometry.lineDistancesNeedUpdate = true;
@@ -4317,7 +4317,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 					createParticleBuffers( geometry );
 					// 分配点云对象的buffer空间
 					initParticleBuffers( geometry, object );
-
+					// 各种需要更新的标记=true，表示需要把内存buffer拷贝进显存
 					geometry.verticesNeedUpdate = true;
 					geometry.colorsNeedUpdate = true;
 
@@ -4492,7 +4492,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				createMeshBuffers( geometryGroup );
 				// 分配gl显存buffer的空间，并和shader中的Attribute链接
 				initMeshBuffers( geometryGroup, object );
-
+				// 各种需要更新的标记=true，表示需要把内存buffer拷贝进显存
 				geometry.verticesNeedUpdate = true;
 				geometry.morphTargetsNeedUpdate = true;
 				geometry.elementsNeedUpdate = true;
@@ -4560,11 +4560,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 		);
 
-	};
+	}
 
 	// Objects updates
 	/**
-	 * @desc 对象更新，需要重新生成buffer
+	 * @desc 对象更新，生成GL显存buffer对象
 	 * @param {THREE.Object3D} object 需要重新生成Buffer的对象
 	 * @param {THREE.Scene} scene 场景
 	 */
@@ -4573,7 +4573,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var geometry = object.geometry, customAttributesDirty, material;
 
 		if ( geometry instanceof THREE.BufferGeometry ) {
-
+			// 设置自定义geo对象的buffer
 			setDirectBuffers( geometry );
 
 		} else if ( object instanceof THREE.Mesh ) {
@@ -4595,13 +4595,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 				material = getBufferMaterial( object, geometryGroup );
 
 				if ( geometry.groupsNeedUpdate === true ) {
-
+					// 分配buffer空间
 					initMeshBuffers( geometryGroup, object );
 
 				}
 
 				customAttributesDirty = material.attributes && areCustomAttributesDirty( material );
-
+				// 链接渲染对象的内存和显存
 				if ( geometry.verticesNeedUpdate || geometry.morphTargetsNeedUpdate || geometry.elementsNeedUpdate ||
 					 geometry.uvsNeedUpdate || geometry.normalsNeedUpdate ||
 					 geometry.colorsNeedUpdate || geometry.tangentsNeedUpdate || customAttributesDirty ) {
@@ -4612,6 +4612,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			}
 
+			// 清除需要更新标记
 			geometry.verticesNeedUpdate = false;
 			geometry.morphTargetsNeedUpdate = false;
 			geometry.elementsNeedUpdate = false;
@@ -4627,13 +4628,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 			material = getBufferMaterial( object, geometry );
 
 			customAttributesDirty = material.attributes && areCustomAttributesDirty( material );
-
+			// 链接渲染对象的内存和显存
 			if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate || geometry.lineDistancesNeedUpdate || customAttributesDirty ) {
 
 				setLineBuffers( geometry, _gl.DYNAMIC_DRAW );
 
 			}
 
+			// 清除需要更新标记
 			geometry.verticesNeedUpdate = false;
 			geometry.colorsNeedUpdate = false;
 			geometry.lineDistancesNeedUpdate = false;
@@ -4646,13 +4648,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 			material = getBufferMaterial( object, geometry );
 
 			customAttributesDirty = material.attributes && areCustomAttributesDirty( material );
-
+			// 链接渲染对象的内存和显存
 			if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate || object.sortParticles || customAttributesDirty ) {
 
 				setParticleBuffers( geometry, _gl.DYNAMIC_DRAW, object );
 
 			}
 
+			// 清除需要更新标记
 			geometry.verticesNeedUpdate = false;
 			geometry.colorsNeedUpdate = false;
 
@@ -4664,7 +4667,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	// Objects updates - custom attributes check
 	/**
-	 * @desc 检查是否需要更新对象
+	 * @desc 检查材质内自定义的Attribute是否需要更新
 	 * @param {THREE.Material} material 材质
 	 * @returns {boolean}
 	 */
@@ -4681,8 +4684,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	/**
-	 * @desc 清除对象需要更新的标记位
-	 * @param material
+	 * @desc 将材质中自定义的Attribute更新标志位设为false
+	 * @param {THREE.Material} material
 	 */
 	function clearCustomAttributes( material ) {
 
