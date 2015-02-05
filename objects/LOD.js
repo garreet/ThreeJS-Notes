@@ -13,7 +13,10 @@
 THREE.LOD = function () {
 
 	THREE.Object3D.call( this );
-
+	/**
+	 * @desc 对象数组
+	 * @type {Array}
+	 */
 	this.objects = [];
 
 };

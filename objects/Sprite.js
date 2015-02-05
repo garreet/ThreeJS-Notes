@@ -26,8 +26,18 @@ THREE.Sprite = ( function () {
 		THREE.Object3D.call( this );
 
 		this.type = 'Sprite';
-
+		/**
+		 * @memberof THREE.Sprite
+		 * @desc 粒子对象的几何对象
+		 * @type {THREE.BufferGeometry}
+		 */
 		this.geometry = geometry;
+		/**
+		 *
+		 * @memberof THREE.Sprite
+		 * @desc 粒子对象的材质对象
+		 * @type {THREE.Material}
+		 */
 		this.material = ( material !== undefined ) ? material : new THREE.SpriteMaterial();
 
 	};

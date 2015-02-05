@@ -16,11 +16,21 @@ THREE.SkinnedMesh = function ( geometry, material, useVertexTexture ) {
 	THREE.Mesh.call( this, geometry, material );
 
 	this.type = 'SkinnedMesh';
-	// 绑定模式
+	/**
+	 * @desc 绑定模式
+	 * @default "attached"
+	 * @type {string}
+	 */
 	this.bindMode = "attached";
-	// 绑定矩阵
+	/**
+	 * @desc 绑定矩阵
+	 * @type {THREE.Matrix4}
+	 */
 	this.bindMatrix = new THREE.Matrix4();
-	// 绑定矩阵的逆矩阵
+	/**
+	 * @desc 绑定矩阵的逆矩阵
+	 * @type {THREE.Matrix4}
+	 */
 	this.bindMatrixInverse = new THREE.Matrix4();
 
 	// init bones

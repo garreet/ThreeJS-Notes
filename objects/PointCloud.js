@@ -12,10 +12,20 @@ THREE.PointCloud = function ( geometry, material ) {
 	THREE.Object3D.call( this );
 
 	this.type = 'PointCloud';
-
+	/**
+	 * @desc 点云对象的几何对象
+	 * @type {THREE.Geometry}
+	 */
 	this.geometry = geometry !== undefined ? geometry : new THREE.Geometry();
+	/**
+	 * @desc 点云对象的材质对象
+	 * @type {THREE.Material}
+	 */
 	this.material = material !== undefined ? material : new THREE.PointCloudMaterial( { color: Math.random() * 0xffffff } );
-
+	/**
+	 * @desc 是否对点云排序
+	 * @type {boolean}
+	 */
 	this.sortParticles = false;
 
 };
