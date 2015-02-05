@@ -74,7 +74,9 @@ THREE.WebGLProgram = ( function () {
 		return attributes;
 
 	};
-
+	/**
+	 * @desc 创建GLProgram
+	 */
 	return function ( renderer, code, material, parameters ) {
 
 		var _this = renderer;
@@ -355,7 +357,11 @@ THREE.WebGLProgram = ( function () {
 			identifiers.push( u );
 
 		}
-
+		/**
+		 * @desc uniform列表
+		 * @memberof WebGLProgram
+		 * @type {*}
+		 */
 		this.uniforms = cacheUniformLocations( _gl, program, identifiers );
 
 		// cache attributes locations
@@ -386,11 +392,13 @@ THREE.WebGLProgram = ( function () {
 		}
 		/**
 		 * @desc attribute列表
+		 * @memberof WebGLProgram
 		 * @type {*}
 		 */
 		this.attributes = cacheAttributeLocations( _gl, program, identifiers );
 		/**
 		 * @desc attrubite的key列表
+		 * @memberof WebGLProgram
 		 * @type {Array}
 		 */
 		this.attributesKeys = Object.keys( this.attributes );
@@ -398,29 +406,36 @@ THREE.WebGLProgram = ( function () {
 		//
 		/**
 		 * @desc WebGLProgram 的ID
+		 * @memberof WebGLProgram
 		 * @type {number}
 		 */
 		this.id = programIdCount ++;
 		/**
 		 * @desc 代码
+		 * @memberof WebGLProgram
+		 * @type {string}
 		 */
 		this.code = code;
 		/**
 		 * @desc 使用次数
+		 * @memberof WebGLProgram
 		 * @type {number}
 		 */
 		this.usedTimes = 1;
 		/**
 		 * @desc gl的program
+		 * @memberof WebGLProgram
 		 */
 		this.program = program;
 		/**
 		 * @desc 顶点shader
+		 * @memberof WebGLProgram
 		 * @type {THREE.WebGLShader}
 		 */
 		this.vertexShader = glVertexShader;
 		/**
 		 * @desc 片段shader
+		 * @memberof WebGLProgram
 		 * @type {THREE.WebGLShader}
 		 */
 		this.fragmentShader = glFragmentShader;
