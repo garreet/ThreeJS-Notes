@@ -2,12 +2,16 @@
  * Uniform Utilities
  */
 /**
- * @desc Uniforms操作
+ * @classdesc Uniforms操作
  * @memberof THREE
- * @type {*}
+ * @constructor
  */
 THREE.UniformsUtils = {
-	// 合并
+	/**
+	 * @desc 合并uniform参数
+	 * @param {array} uniforms
+	 * @returns {array}
+	 */
 	merge: function ( uniforms ) {
 
 		var merged = {};
@@ -27,7 +31,11 @@ THREE.UniformsUtils = {
 		return merged;
 
 	},
-	// 克隆
+	/**
+	 * @desc THREE.UniformsUtils 克隆函数
+	 * @param {THREE.UniformsUtils} uniforms_src
+	 * @returns {THREE.UniformsUtils}
+	 */
 	clone: function ( uniforms_src ) {
 
 		var uniforms_dst = {};

@@ -2,13 +2,15 @@
  * Uniforms library for shared webgl shaders
  */
 /**
- * @desc Uniforms库，包含各种定义的shader的uniform组成
+ * @classdesc Uniforms库，包含各种定义的shader的uniform组成
  * @memberof THREE
- * @type {*}
+ * @constructor
  */
 THREE.UniformsLib = {
 
-	// 普通
+	/**
+	 * @desc 普通渲染参数
+	 */
 	common: {
 
 		"diffuse" : { type: "c", value: new THREE.Color( 0xeeeeee ) },
@@ -32,20 +34,26 @@ THREE.UniformsLib = {
 
 	},
 
-	// 碰撞
+	/**
+	 * @desc 碰撞参数
+	 */
 	bump: {
 
 		"bumpMap" : { type: "t", value: null },
 		"bumpScale" : { type: "f", value: 1 }
 
 	},
-	// 法线贴图
+	/**
+	 * @desc 法线贴图参数
+	 */
 	normalmap: {
 
 		"normalMap" : { type: "t", value: null },
 		"normalScale" : { type: "v2", value: new THREE.Vector2( 1, 1 ) }
 	},
-	// 雾
+	/**
+	 * @desc 雾效果参数
+	 */
 	fog : {
 
 		"fogDensity" : { type: "f", value: 0.00025 },
@@ -54,7 +62,9 @@ THREE.UniformsLib = {
 		"fogColor" : { type: "c", value: new THREE.Color( 0xffffff ) }
 
 	},
-	// 光照
+	/**
+	 * @desc 光照效果参数
+	 */
 	lights: {
 
 		"ambientLightColor" : { type: "fv", value: [] },
@@ -78,7 +88,9 @@ THREE.UniformsLib = {
 		"spotLightExponent" : { type: "fv1", value: [] }
 
 	},
-	// 粒子
+	/**
+	 * @desc 粒子效果参数
+	 */
 	particle: {
 
 		"psColor" : { type: "c", value: new THREE.Color( 0xeeeeee ) },
@@ -93,7 +105,9 @@ THREE.UniformsLib = {
 		"fogColor" : { type: "c", value: new THREE.Color( 0xffffff ) }
 
 	},
-	// 阴影贴图
+	/**
+	 * @desc 阴影贴图效果参数
+	 */
 	shadowmap: {
 
 		"shadowMap": { type: "tv", value: [] },
