@@ -101,7 +101,7 @@ THREE.SkinnedMesh = function ( geometry, material, useVertexTexture ) {
 };
 
 /**
- * @desc SkinnedMesh.Mesh的原型继承所有属性方法
+ * @desc SkinnedMesh从Mesh的原型继承所有属性方法
  * @type {THREE.Mesh}
  */
 THREE.SkinnedMesh.prototype = Object.create( THREE.Mesh.prototype );

@@ -30,7 +30,7 @@ THREE.PointCloud = function ( geometry, material ) {
 
 };
 /**
- * @desc PointCloud.Objec3D的原型继承所有属性方法
+ * @desc PointCloud从Objec3D的原型继承所有属性方法
  * @type {THREE.Object3D}
  */
 THREE.PointCloud.prototype = Object.create( THREE.Object3D.prototype );

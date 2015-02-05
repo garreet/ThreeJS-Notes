@@ -44,7 +44,7 @@ THREE.Sprite = ( function () {
 
 } )();
 /**
- * @desc Sprite.Objec3D的原型继承所有属性方法
+ * @desc Sprite从Objec3D的原型继承所有属性方法
  * @type {THREE.Object3D}
  */
 THREE.Sprite.prototype = Object.create( THREE.Object3D.prototype );

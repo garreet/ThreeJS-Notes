@@ -19,7 +19,7 @@ THREE.Bone = function ( belongsToSkin ) {
 
 };
 /**
- * @desc Bone.Object3D的原型继承所有属性方法
+ * @desc Bone从Object3D的原型继承所有属性方法
  * @type {THREE.Object3D}
  */
 THREE.Bone.prototype = Object.create( THREE.Object3D.prototype );
