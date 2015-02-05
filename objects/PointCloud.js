@@ -44,7 +44,7 @@ THREE.PointCloud.prototype.raycast = ( function () {
 
 		inverseMatrix.getInverse( this.matrixWorld );
 		ray.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
-
+		// 外包围盒碰撞判断
 		if ( geometry.boundingBox !== null ) {
 
 			if ( ray.isIntersectionBox( geometry.boundingBox ) === false ) {
@@ -57,7 +57,7 @@ THREE.PointCloud.prototype.raycast = ( function () {
 
 		var localThreshold = threshold / ( ( this.scale.x + this.scale.y + this.scale.z ) / 3 );
 		var position = new THREE.Vector3();
-
+		//检查射线与点云元素是否碰撞的具体实现.
 		var testPoint = function ( point, index ) {
 
 			var rayPointDistance = ray.distanceToPoint( point );
@@ -83,12 +83,12 @@ THREE.PointCloud.prototype.raycast = ( function () {
 			}
 
 		};
-
+		// 如果geometry对象是BufferGeometry对象
 		if ( geometry instanceof THREE.BufferGeometry ) {
 
 			var attributes = geometry.attributes;
 			var positions = attributes.position.array;
-
+			// 下面对三种数据格式的pointCloud对象的元素进行检测.
 			if ( attributes.index !== undefined ) {
 
 				var indices = attributes.index.array;

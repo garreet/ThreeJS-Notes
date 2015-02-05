@@ -30,6 +30,7 @@ THREE.Mesh = function ( geometry, material ) {
 	 */
 	this.material = material !== undefined ? material : new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff } );
 
+	// 更新目标变形，不影响geometry对象
 	this.updateMorphTargets();
 
 };
@@ -43,18 +44,36 @@ THREE.Mesh.prototype = Object.create( THREE.Object3D.prototype );
  */
 THREE.Mesh.prototype.updateMorphTargets = function () {
 
+	// 判断geometry对象是否有目标变形数组
 	if ( this.geometry.morphTargets !== undefined && this.geometry.morphTargets.length > 0 ) {
-
+		/**
+		 * @memberof THREE.Mesh
+		 * @default
+		 * @type {number}
+		 */
 		this.morphTargetBase = - 1;
+		/**
+		 * @memberof THREE.Mesh
+		 * @type {array}
+		 */
 		this.morphTargetForcedOrder = [];
+		/**
+		 * @memberof THREE.Mesh
+		 * @type {array}
+		 */
 		this.morphTargetInfluences = [];
+		/**
+		 * @memberof THREE.Mesh
+		 * @type {*}
+		 */
 		this.morphTargetDictionary = {};
 
 		for ( var m = 0, ml = this.geometry.morphTargets.length; m < ml; m ++ ) {
 
 			this.morphTargetInfluences.push( 0 );
+			// 将geometry.morphTargets属性数组中的值，
+			// 一一赋值给morphTargetDictionary[]属性数组。
 			this.morphTargetDictionary[ this.geometry.morphTargets[ m ].name ] = m;
-
 		}
 
 	}
@@ -62,8 +81,8 @@ THREE.Mesh.prototype.updateMorphTargets = function () {
 };
 /**
  * @desc 根据名称获得变形顶点索引
- * @param {String} name 名称
- * @returns {*}
+ * @param {String} name MorphTarget存储的名称
+ * @returns {*} 返回参数name所对应的顶点
  */
 THREE.Mesh.prototype.getMorphTargetIndexByName = function ( name ) {
 
@@ -81,7 +100,7 @@ THREE.Mesh.prototype.getMorphTargetIndexByName = function ( name ) {
 
 /**
  * @function
- * @desc 线的拾取判断函数
+ * @desc Mesh的拾取判断函数
  * @param {THREE.Raycaster} raycaster 拾取射线对象
  * @param {*} intersects 拾取结果对象数组
  */

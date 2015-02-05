@@ -51,7 +51,7 @@ THREE.Sprite.prototype.raycast = ( function () {
 	return function ( raycaster, intersects ) {
 
 		matrixPosition.setFromMatrixPosition( this.matrixWorld );
-
+		// 点距离判断
 		var distance = raycaster.ray.distanceToPoint( matrixPosition );
 
 		if ( distance > this.scale.x ) {
