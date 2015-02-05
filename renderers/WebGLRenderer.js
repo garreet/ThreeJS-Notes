@@ -1061,7 +1061,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			'__webglUVBuffer',				// UV
 			'__webglUV2Buffer',				// UV2
 			
-			'__webglSkinIndicesBuffer',		// 蒙皮参数
+			'__webglSkinIndicesBuffer',		// 蒙皮指数
 			'__webglSkinWeightsBuffer',		// 蒙皮权重
 			
 			'__webglFaceBuffer',			// 索引
@@ -3926,7 +3926,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			var material = null;
 
 			// opaque pass (front-to-back order)
-			// 设置混合模式
+			// 设置无混合模式
 			this.setBlending( THREE.NoBlending );
 
 			// 渲染不透明对象

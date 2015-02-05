@@ -363,7 +363,7 @@ THREE.Mesh.prototype.raycast = ( function () {
 
 }() );
 /**
- * @desc Three.Mesh 拷贝函数
+ * @desc Three.Mesh 克隆函数
  * @param {THREE.Mesh} object
  * @param {boolean} recursive 是否递归拷贝
  * @returns {THREE.Mesh}

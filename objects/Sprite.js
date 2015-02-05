@@ -73,7 +73,7 @@ THREE.Sprite.prototype.raycast = ( function () {
 
 }() );
 /**
- * @desc Three.Sprite 拷贝函数
+ * @desc Three.Sprite 克隆函数
  * @param {THREE.Sprite} object
  * @returns {THREE.Sprite}
  */

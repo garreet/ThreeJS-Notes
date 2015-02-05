@@ -158,7 +158,7 @@ THREE.PointCloud.prototype.raycast = ( function () {
 
 }() );
 /**
- * @desc Three.PointCloud 拷贝函数
+ * @desc Three.PointCloud 克隆函数
  * @param {THREE.PointCloud} object
  * @returns {THREE.PointCloud}
  */

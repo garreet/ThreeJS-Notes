@@ -135,7 +135,7 @@ THREE.Line.prototype.raycast = ( function () {
 
 }() );
 /**
- * @desc Three.Line 拷贝函数
+ * @desc Three.Line 克隆函数
  * @param {THREE.Line} object
  * @returns {THREE.Line}
  */
