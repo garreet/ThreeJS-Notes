@@ -99,7 +99,7 @@ THREE.Sprite.prototype.clone = function ( object ) {
 
 // Backwards compatibility
 /**
- * @memberof THREE
- * @desc 粒子对象,其实就是Sprite对象
+ * @classdesc 粒子对象,其实就是Sprite对象
+ * @constructor
  */
 THREE.Particle = THREE.Sprite;
