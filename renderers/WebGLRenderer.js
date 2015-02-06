@@ -1245,7 +1245,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 材质对象的删除，显存的program对象删除
+	 * @desc 材质对象的显存program对象删除
 	 * @param {THREE.Material} material 几何对象
 	 */
 	var deallocateMaterial = function ( material ) {
@@ -1259,10 +1259,10 @@ THREE.WebGLRenderer = function ( parameters ) {
 		// only deallocate GL program if this was the last use of shared program
 		// assumed there is only single copy of any program in the _programs list
 		// (that's how it's constructed)
-
+		// 只有当GL program是最后一个引用计数的时候，才会被删除（它是怎么被创建的？）
 		var i, il, programInfo;
 		var deleteProgram = false;
-
+		// 遍历program列表，找到需要被删除的program，必须引用次数为0
 		for ( i = 0, il = _programs.length; i < il; i ++ ) {
 
 			programInfo = _programs[ i ];
@@ -1282,11 +1282,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 删除program
 		if ( deleteProgram === true ) {
 
 			// avoid using array.splice, this is costlier than creating new array from scratch
-
+			// 不使用array.splice，因为它比重新创建一个array要耗时
 			var newPrograms = [];
 
 			for ( i = 0, il = _programs.length; i < il; i ++ ) {
@@ -1302,7 +1302,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 			_programs = newPrograms;
-
+			// 删除program，并把计数减一
 			_gl.deleteProgram( program );
 
 			_this.info.memory.programs --;
@@ -3063,7 +3063,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 	/**
-	 * @desc 渲染buff生成 ， 并绘制<br />
+	 * @desc 普通渲染对象的BufferGeometry对象渲染<br />
 	 * 主要是顶点，索引，颜色，UV等属性传入SHADER
 	 * @param {THREE.Camera} camera 相机对象
 	 * @param {THREE.Light} lights 灯光对象
@@ -3073,9 +3073,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 	 * @param {THREE.Object3D} object 对象
 	 */
 	this.renderBufferDirect = function ( camera, lights, fog, material, geometry, object ) {
-
+		// 材质不可见，返回
 		if ( material.visible === false ) return;
-
+		// 创建glsl程序
 		var program = setProgram( camera, lights, fog, material, object );
 
 		var updateBuffers = false,
@@ -3305,7 +3305,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 渲染buff生成 ，并绘制<br />
+	 * @desc 预定义普通对象渲染<br />
 	 * 主要是顶点，索引，颜色，UV等属性传入SHADER
 	 * @param {THREE.Camera} camera 相机对象
 	 * @param {THREE.Light} lights 灯光对象
@@ -3898,7 +3898,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			var object = webglObject.object;
 
 			if ( object.visible ) {
-				// 根据相机矩阵设置对象的视矩阵和法线矩阵
+				// 根据相机矩阵设置即时渲染对象的视矩阵和法线矩阵
 				setupMatrices( object, camera );
 				// 设置即时渲染对象的材质透明标记分类
 				unrollImmediateBufferMaterial( webglObject );
@@ -4059,7 +4059,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		var material;
 
-		// 循环对象列表
+		// 循环对象列表,倒序
 		for ( var i = renderList.length - 1; i !== - 1; i -- ) {
 
 			var webglObject = renderList[ i ];
@@ -4067,12 +4067,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 			var object = webglObject.object;
 			var buffer = webglObject.buffer;
 
-			// 根据相机更新对象
+			// 根据相机更新对象世界矩阵和法线矩阵
 			setupMatrices( object, camera );
 
 			// 设置材质
 			if ( overrideMaterial ) {
-
+				// 场景默认材质
 				material = overrideMaterial;
 
 			} else {
@@ -4090,16 +4090,16 @@ THREE.WebGLRenderer = function ( parameters ) {
 				setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
 
 			}
-
+			// 根据材质设置裁剪面和点序顺逆
 			_this.setMaterialFaces( material );
 
 			// 渲染对象
 			if ( buffer instanceof THREE.BufferGeometry ) {
-
+				// 普通渲染对象的BufferGeometry对象渲染
 				_this.renderBufferDirect( camera, lights, fog, material, buffer, object );
 
 			} else {
-
+				// 普通渲染对象渲染
 				_this.renderBuffer( camera, lights, fog, material, buffer, object );
 
 			}
@@ -4749,14 +4749,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	// Materials
 	/**
-	 * @desc 初始化材质对象
+	 * @desc 初始化材质对象的program
 	 * @param {THREE.Material} material 需初始化材质对象
 	 * @param {THREE.Light[]} lights 灯光对象数组
 	 * @param {THREE.Fog} fog 雾对象
 	 * @param {THREE.Object3D} object 3D对象
 	 */
 	function initMaterial( material, lights, fog, object ) {
-
+		// 添加材质program的销毁事件
 		material.addEventListener( 'dispose', onMaterialDispose );
 
 		var shaderID;
@@ -4809,7 +4809,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		} else {
 
-			// 如果没有内置，则使用材质内地shader
+			// 如果没有内置，则使用材质内的shader相关定义
 			material.__webglShader = {
 				uniforms: material.uniforms,
 				vertexShader: material.vertexShader,
@@ -4822,57 +4822,84 @@ THREE.WebGLRenderer = function ( parameters ) {
 		// (not to blow over maxLights budget)
 
 		// 初始化灯光，阴影，骨骼
-		var maxLightCount = allocateLights( lights );
-		var maxShadows = allocateShadows( lights );
-		var maxBones = allocateBones( object );
+		var maxLightCount = allocateLights( lights );		// 计算不同光照类型的光源个数，有平行光，电光源，聚光灯光，半球光
+		var maxShadows = allocateShadows( lights );			// 根据光源计算阴影个数，支持阴影的光源有: 点光源阴影 ， 平行光阴影
+		var maxBones = allocateBones( object );				// 计算骨骼动画个数
 
 		// shader的参数列表赋值
 		var parameters = {
-
+			// 精度
 			precision: _precision,
+			// 支持顶点纹理
 			supportsVertexTextures: _supportsVertexTextures,
 
+			// 贴图
 			map: !! material.map,
+			// 环境贴图
 			envMap: !! material.envMap,
+			// 光照贴图
 			lightMap: !! material.lightMap,
+			// 凸凹贴图
 			bumpMap: !! material.bumpMap,
+			// 法线贴图
 			normalMap: !! material.normalMap,
+			// 反射贴图
 			specularMap: !! material.specularMap,
+			// 透明贴图
 			alphaMap: !! material.alphaMap,
-
+			// 顶点颜色
 			vertexColors: material.vertexColors,
-
+			// 雾
 			fog: fog,
+			// 雾对象
 			useFog: material.fog,
+			// 指数雾
 			fogExp: fog instanceof THREE.FogExp2,
-
+			// 尺寸衰减
 			sizeAttenuation: material.sizeAttenuation,
+			// 对数深度缓存
 			logarithmicDepthBuffer: _logarithmicDepthBuffer,
-
+			// 蒙皮
 			skinning: material.skinning,
+			// 最大骨骼
 			maxBones: maxBones,
+			// 使用顶点纹理
 			useVertexTexture: _supportsBoneTextures && object && object.skeleton && object.skeleton.useVertexTexture,
-
+			// 可变顶点
 			morphTargets: material.morphTargets,
+			// 可变法线
 			morphNormals: material.morphNormals,
+			// 最大可变顶点
 			maxMorphTargets: _this.maxMorphTargets,
+			// 最大可变法线
 			maxMorphNormals: _this.maxMorphNormals,
-
+			// 最大平行光
 			maxDirLights: maxLightCount.directional,
+			// 最大点光源
 			maxPointLights: maxLightCount.point,
+			// 最大聚光灯光源
 			maxSpotLights: maxLightCount.spot,
+			// 最大半球光
 			maxHemiLights: maxLightCount.hemi,
-
+			// 最大阴影
 			maxShadows: maxShadows,
+			// 是否阴影贴图
 			shadowMapEnabled: _this.shadowMapEnabled && object.receiveShadow && maxShadows > 0,
+			// 阴影贴图类型
 			shadowMapType: _this.shadowMapType,
+			// 阴影贴图调试
 			shadowMapDebug: _this.shadowMapDebug,
+			// 阴影贴图级联
 			shadowMapCascade: _this.shadowMapCascade,
-
+			// 透明测试
 			alphaTest: material.alphaTest,
+			// 金属模式
 			metal: material.metal,
+			// 环绕贴图
 			wrapAround: material.wrapAround,
+			// 双面渲染
 			doubleSided: material.side === THREE.DoubleSide,
+			// 裁剪面
 			flipSided: material.side === THREE.BackSide
 
 		};
@@ -4883,18 +4910,18 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var chunks = [];
 
 		if ( shaderID ) {
-
+			// 加入预置shader名称
 			chunks.push( shaderID );
 
 		} else {
-
+			// 加入自定义shader
 			chunks.push( material.fragmentShader );
 			chunks.push( material.vertexShader );
 
 		}
 
+		// 材质自定义参数，循环加入chunks
 		if ( material.defines !== undefined ) {
-
 			for ( var name in material.defines ) {
 
 				chunks.push( name );
@@ -4903,7 +4930,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 预定义参数，循环加入chunks
 		for ( var name in parameters ) {
 
 			chunks.push( name );
@@ -4917,7 +4944,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var program;
 
 		// Check if code has been already compiled
-		// 检查shader是否存在
+		// 检查shader的code是否存在，如果存在，则引用计数加一
 		for ( var p = 0, pl = _programs.length; p < pl; p ++ ) {
 
 			var programInfo = _programs[ p ];
@@ -4944,7 +4971,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 		material.program = program;
-
+		// 初始化Attribute列表
 		var attributes = program.attributes;
 
 		if ( material.morphTargets ) {
@@ -4989,7 +5016,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		material.uniformsList = [];
 
-		// uniforms列表赋值
+		// 初始化uniforms列表
 		for ( var u in material.__webglShader.uniforms ) {
 
 			var location = material.program.uniforms[ u ];
@@ -5003,7 +5030,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	/**
-	 * @desc 设置program
+	 * @desc 设置glsl program
 	 * @param {THREE.Camera} camera 相机
 	 * @param {THREE.Light[]} lights 灯光
 	 * @param {THREE.Fog} fog 雾
@@ -5017,14 +5044,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		// 更新材质
 		if ( material.needsUpdate ) {
-
+			// 删除材质的program
 			if ( material.program ) deallocateMaterial( material );
-
+			// 初始化材质的program
 			initMaterial( material, lights, fog, object );
 			material.needsUpdate = false;
 
 		}
-
+		// 生成可变顶点buffer
 		if ( material.morphTargets ) {
 
 			if ( ! object.__webglMorphTargetInfluences ) {
@@ -5035,6 +5062,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
+		// 设置使用当前program
 		var refreshProgram = false;
 		var refreshMaterial = false;
 		var refreshLights = false;
@@ -6262,14 +6290,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	};
 	/**
-	 * @desc 设置材质面的裁剪方式
+	 * @desc 设置材质面的裁剪方式及点序顺逆
 	 * @param {THREE.Material} material
 	 */
 	this.setMaterialFaces = function ( material ) {
 
 		var doubleSided = material.side === THREE.DoubleSide;
 		var flipSided = material.side === THREE.BackSide;
-
+		// 裁剪面
 		if ( _oldDoubleSided !== doubleSided ) {
 
 			if ( doubleSided ) {
@@ -6285,7 +6313,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_oldDoubleSided = doubleSided;
 
 		}
-
+		// 面定点的时钟顺序
 		if ( _oldFlipSided !== flipSided ) {
 
 			if ( flipSided ) {
@@ -7147,14 +7175,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	// Allocations
 	/**
-	 * @desc 分配骨骼动画空间
+	 * @desc 计算骨骼动画个数
 	 * @param {THREE.Object3D} object 骨骼对象
 	 * @returns {number}
 	 */
 	function allocateBones ( object ) {
 
 		if ( _supportsBoneTextures && object && object.skeleton && object.skeleton.useVertexTexture ) {
-
+			// 使用骨骼纹理，返回1024
 			return 1024;
 
 		} else {
@@ -7190,7 +7218,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 	/**
-	 * @desc 分配光照空间
+	 * @desc 计算不同光照类型的个数<br />
+	 * 平行光，电光源，聚光灯光，半球光
 	 * @param {THREE.Light[]} lights 光照对象列表
 	 * @returns {number}
 	 */
@@ -7218,7 +7247,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 	/**
-	 * @desc 分配阴影对象空间
+	 * @desc 根据光源计算阴影个数<br />
+	 * 支持阴影的光源有: 点光源阴影 ， 平行光阴影
 	 * @param {THREE.Light[]} lights 光照对象列表
 	 * @returns {number}
 	 */
