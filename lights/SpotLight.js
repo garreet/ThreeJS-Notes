@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 聚光灯光源对象
+ * @classdesc 聚光灯光源对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 根据设置灯光的颜属性color, 强度属性intensity,距离属性 distance,灯光的照射角度 angle,衰减速度 exponent 创建聚光灯光源(射灯)<br />
  * SpotLight类型灯光实现了阴影,但是需要在场景中使用MeshLambertMaterial或者MeshPhongMaterial
  * @param {THREE.Color} color 灯光的颜色属性

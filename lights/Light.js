@@ -3,7 +3,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 灯光对象的抽象基类
+ * @classdesc 灯光对象的抽象基类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 在WebGL的三维空间中,存在点光源PointLight和聚光灯SpotLight两种类型,还有作为点光源的一种特例<br />
  * 平行光DirectionLight,和环境光AmbientLight.在3D场景中,基本上是这几种光源的组合,创建各种各样的效果
  * @param {THREE.Color} color	灯光颜色值

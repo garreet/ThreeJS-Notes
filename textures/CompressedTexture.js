@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 由Mipmaps生成的纹理对象
+ * @classdesc 由Mipmaps生成的纹理对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @extends {THREE.Texture}
  * @param {number} mipmaps  mipmaps对象，,WebGL不能生成mipmaps,mipmaps只能嵌入到DDS文件
  * @param {number} width 图像宽度

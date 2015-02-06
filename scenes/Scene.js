@@ -3,7 +3,8 @@
  */
 
 /**
- * @classdesc  Scene是场景对象,所有的对象,灯光,动画,骨骼等都需要放置在场景内.Scene对象的功能函数采用定义构造的函数原型对象来实现.
+ * @classdesc  Scene是场景对象,所有的对象,灯光,动画,骨骼等都需要放置在场景内.Scene对象的功能函数采用定义构造的函数原型对象来实现.<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc  场景对象构造函数
  * @class
  * @extends {THREE.Object3D}

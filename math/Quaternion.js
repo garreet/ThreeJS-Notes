@@ -6,7 +6,8 @@
  */
 
 /**
- * @classdesc  四元数
+ * @classdesc  四元数<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 四元数通俗的讲,是一种数学方法,经常用来对3维向量进行平移,缩放,旋转等变换操作的方法.一种非常方便使用的数学方法
  * @param {float} x
  * @param {float} y

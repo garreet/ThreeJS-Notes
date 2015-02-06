@@ -19,7 +19,8 @@
  *
  */
 /**
- * @classdesc 字体对象工具集
+ * @classdesc 字体对象工具集<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @constructor
  */
 THREE.FontUtils = {

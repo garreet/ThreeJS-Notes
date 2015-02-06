@@ -2,7 +2,8 @@
  * @author bhouston / http://exocortex.com
  */
 /**
- * @classdesc 2维矩形类
+ * @classdesc 2维矩形类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Vector2} min  	未定义则为无穷大
  * @param {THREE.Vector2} max	未定义则为无穷小
  * @constructor

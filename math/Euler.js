@@ -4,7 +4,8 @@
  * @author bhouston / http://exocortex.com
  */
 /**
- * @classdesc  欧拉角
+ * @classdesc  欧拉角<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 欧拉角是绕坐标轴旋转的角度和顺序<br />
  * 按照heading , pitch , roll 的顺序，应该是 YXZ
  * @param {float} x

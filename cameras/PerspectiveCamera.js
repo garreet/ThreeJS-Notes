@@ -4,7 +4,8 @@
  * @author zz85 / http://www.lab4games.net/zz85/blog
  */
 /**
- * @classdesc 透视投影相机
+ * @classdesc 透视投影相机<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 根据 fov, aspect, near, far 生成透视投影相机
  * @constructor
  * @param {float} fov		相机的可视角度,可选参数,如果未指定,初始化为50

@@ -5,7 +5,8 @@
  * @author jonobr1 / http://jonobr1.com/
  */
 /**
- * @classdesc Mesh对象
+ * @classdesc Mesh对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Geometry} geometry 几何信息
  * @param {THREE.Material} material 材质信息
  * @extends {THREE.Object3D}

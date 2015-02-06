@@ -3,7 +3,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 三角面对象类（三维空间内）
+ * @classdesc 三角面对象类（三维空间内）<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Vector3} a	三角面角点a的索引
  * @param {THREE.Vector3} b	三角面角点b的索引
  * @param {THREE.Vector3} c	三角面角点c的索引

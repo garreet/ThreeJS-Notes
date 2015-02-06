@@ -2,7 +2,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 环境光对象
+ * @classdesc 环境光对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Color} color 环境光的颜色
  * @extends {THREE.Light}
  * @constructor

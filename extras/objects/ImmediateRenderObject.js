@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 即时渲染对象
+ * @classdesc 即时渲染对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @constructor
  */
 THREE.ImmediateRenderObject = function () {

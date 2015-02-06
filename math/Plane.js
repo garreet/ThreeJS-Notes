@@ -2,7 +2,8 @@
  * @author bhouston / http://exocortex.com
  */
 /**
- * @classdesc 平面类
+ * @classdesc 平面类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 法线向量为normal,从原点到平面的距离为constant的无限延展的2维平面对象
  * @param {THREE.Vector3} normal	法线向量
  * @param {number} constant 原点到平面的距离

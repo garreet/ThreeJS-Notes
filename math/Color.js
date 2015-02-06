@@ -3,7 +3,8 @@
  */
 
 /**
- * @classdesc 颜色值，RGB
+ * @classdesc 颜色值，RGB<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {rgb|int} color - 一个rgb颜色值 rgb(256,256,256) 或者一个0x开头的6位16进制颜色值(0xaabbff);
  * @returns {THREE.Color}
  * @constructor

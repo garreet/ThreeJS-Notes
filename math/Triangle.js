@@ -3,7 +3,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 三角形类
+ * @classdesc 三角形类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 由a,b,c三个向量组成的三角形
  * @param {THREE.Vector3} a
  * @param {THREE.Vector3} b

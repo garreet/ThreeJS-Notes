@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 变形动画网格对象
+ * @classdesc 变形动画网格对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 这个对象是专门针对变形动画的,增加了许多角色变形动画的内容
  * @param {THREE.Geometry} geometry 几何对象
  * @param {THREE.Material} material 材质对象

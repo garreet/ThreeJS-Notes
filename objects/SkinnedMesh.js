@@ -4,7 +4,8 @@
  * @author ikerr / http://verold.com
  */
 /**
- * @classdesc 蒙皮网格对象
+ * @classdesc 蒙皮网格对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 蒙皮网格用于渲染人物。人物动画使用的骨骼，而且每个骨骼影响网格的一部分.
  * @param {THREE.Geometry} geometry 几何对象
  * @param {THREE.Material} material 材质对象

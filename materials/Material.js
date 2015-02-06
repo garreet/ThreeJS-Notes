@@ -3,7 +3,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 材质对象
+ * @classdesc 材质对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc Material是材质对象的抽象基类,当创建材质时都从这个类继承<br />
  * Material对象的功能函数采用定义构造的函数原型对象来实现<br />
  * 简单的说就是物体看起来是什么质地。材质可以看成是材料和质感的结合。<br />

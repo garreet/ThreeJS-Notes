@@ -2,7 +2,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 视频纹理对象
+ * @classdesc 视频纹理对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @extends {THREE.Texture}
  * @param {*} video 视频对象
  * @param {number} mapping 映射模式

@@ -4,7 +4,8 @@
  * @author bhouston / http://exocortex.com
  */
 /**
- * @classdesc 平截头体对象
+ * @classdesc 平截头体对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Plane} p0
  * @param {THREE.Plane} p1
  * @param {THREE.Plane} p2

@@ -14,7 +14,8 @@
  * }
  */
 /**
- * @classdesc mesh(网格)的标准材质类型
+ * @classdesc mesh(网格)的标准材质类型<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {String} parameters 材质参数
  * @extends {THREE.Material}
  * @constructor

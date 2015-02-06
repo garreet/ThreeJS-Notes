@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 半球光对象
+ * @classdesc 半球光对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc HemisphereLight类是在场景中创建半球光,就是天光效果<br />
  * 经常用在室外,将各个位置的物体都照亮,室内的光线大多是方向性的<br />
  * 半球光不支持阴影

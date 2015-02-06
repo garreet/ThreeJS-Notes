@@ -28,7 +28,8 @@
  * }
  */
 /**
- * @classdesc 自定义着色器创建材质类型
+ * @classdesc 自定义着色器创建材质类型<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 这样的材质对象让用户扩充材质类型,有了无限的可能
  * @param {String} parameters 材质参数
  * @extends {THREE.Material}

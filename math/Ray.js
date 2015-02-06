@@ -2,7 +2,8 @@
  * @author bhouston / http://exocortex.com
  */
 /**
- * @classdesc 射线类
+ * @classdesc 射线类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 创建一个原点为origin,方向为direction的射线
  * @param {THREE.Vector3} origin	起点坐标
  * @param {THREE.Vector3} direction 射线方向

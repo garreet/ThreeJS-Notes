@@ -4,7 +4,8 @@
  * @author Daosheng Mu / https://github.com/DaoshengMu/
  */
 /**
- * @classdesc 图片对象工具集
+ * @classdesc 图片对象工具集<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @constructor
  */
 THREE.ImageUtils = {

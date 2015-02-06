@@ -6,7 +6,8 @@
  * @author WestLangley / http://github.com/WestLangley
  */
 /**
- * @classdesc  4维向量
+ * @classdesc  4维向量<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc w称为比例因子，当w不为0时(一般设1)，表示一个坐标<br />,
  * 一个三维坐标的三个分量x，y，z用齐次坐标表示为变为x，y，z，w的4维空间,变换成三维坐标是方式是x/w,y/w,z/w，<br />
  * 当w为0时，在数学上代表无穷远点，即并非一个具体的坐标位置，而是一个具有大小和方向的向量<br />

@@ -47,7 +47,8 @@
  * }
  */
 /**
- * @classdesc 高光材质类型
+ * @classdesc 高光材质类型<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc mesh(网格)的phong(冯氏)高光材质类型<br />
  * 表面有光泽的材质类型,计算每个像素
  * @param {String} parameters 材质参数

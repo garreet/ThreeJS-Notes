@@ -5,7 +5,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 立方体投影相机
+ * @classdesc 立方体投影相机<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 根据 near, far, cubeResolution 生成立方体投影相机
  * @constructor
  * @param {float} near		相对于深度剪切面的近的距离，必须为正数,可选参数,如果未指定,初始化为0.1

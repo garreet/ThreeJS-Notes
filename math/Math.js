@@ -3,7 +3,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc  数学类
+ * @classdesc  数学类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 数学相关函数
  * @class
  */

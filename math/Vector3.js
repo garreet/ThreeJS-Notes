@@ -8,7 +8,8 @@
  */
 
 /**
- * @classdesc 3维向量
+ * @classdesc 3维向量<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {float} x - x坐标
  * @param {float} y - y坐标
  * @param {float} z - z坐标

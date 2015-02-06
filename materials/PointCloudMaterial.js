@@ -19,7 +19,8 @@
  * }
  */
 /**
- * @classdesc 点云（粒子系统）材质基类
+ * @classdesc 点云（粒子系统）材质基类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {String} parameters 材质参数
  * @extends {THREE.Material}
  * @constructor

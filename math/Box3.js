@@ -3,7 +3,8 @@
  * @author WestLangley / http://github.com/WestLangley
  */
 /**
- * @classdesc 3维立方体类，box
+ * @classdesc 3维立方体类，box<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Vector3} min  	未定义则为无穷大
  * @param {THREE.Vector3} max	未定义则为无穷小
  * @constructor

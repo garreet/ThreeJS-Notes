@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 由二进制数据生成的纹理对象
+ * @classdesc 由二进制数据生成的纹理对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @extends {THREE.Texture}
  * @param {*} data 图像数据
  * @param {number} width 图像宽度

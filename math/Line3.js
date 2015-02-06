@@ -2,7 +2,8 @@
  * @author bhouston / http://exocortex.com
  */
 /**
- * @classdesc  3维线段
+ * @classdesc  3维线段<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Vector3} start
  * @param {THREE.Vector3} end
  * @class

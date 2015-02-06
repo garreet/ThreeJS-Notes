@@ -2,7 +2,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 点光源对象
+ * @classdesc 点光源对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 点光源目前不支持阴影
  * @param {THREE.Color} color 点光源颜色
  * @param {float} intensity 光的强度,默认是1

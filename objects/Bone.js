@@ -4,7 +4,8 @@
  * @author ikerr / http://verold.com
  */
 /**
- * @classdesc 骨骼对象
+ * @classdesc 骨骼对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.SkinnedMesh} belongsToSkin 蒙皮对象
  * @constructor
  */

@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @desc 动画混合mesh
+ * @desc 动画混合mesh<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Geometry} geometry 几何对象
  * @param {THREE.Material} material 材质对象
  * @constructor

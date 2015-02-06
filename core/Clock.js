@@ -3,7 +3,8 @@
  */
 
 /**
- * @classdesc 时钟类
+ * @classdesc 时钟类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 用来记录时间等功能
  * @param {boolean} autoStart 是否自动启动，默认为启动
  * @constructor

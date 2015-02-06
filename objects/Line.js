@@ -2,7 +2,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 线对象
+ * @classdesc 线对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc WebGL中好像线不能设置宽度
  * @param {THREE.Geometry} geometry 几何信息
  * @param {THREE.Material} material 材质信息

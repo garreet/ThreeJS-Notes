@@ -3,7 +3,8 @@
  */
 
 /**
- * @desc 声明全局对象THREE
+ * @desc 声明全局对象THREE<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @class THREE
  */
 var THREE = {

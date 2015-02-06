@@ -6,7 +6,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 曲线对象类
+ * @classdesc 曲线对象类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 由Vector3数组（points）组成的曲线
  * @param {THREE.Vector3[]} points
  * @constructor

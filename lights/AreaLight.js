@@ -3,7 +3,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 面光，区域光对象
+ * @classdesc 面光，区域光对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 区域光和其他光源不同,是一种二维面积光源,他的亮度不仅和强度有关,而且还和他的面积大小有关.<br />
  * 通过变换灯光的width,height,normal属性,区域光可以模拟窗户射入光线
  * @param {THREE.Color} color 环境光的颜色

@@ -3,7 +3,8 @@
  */
 
 /**
- * @classdesc 属性对象类
+ * @classdesc 属性对象类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 存储于bufferGeometry相关联的属性数据
  * @param {array} array 属性数组
  * @param {number} itemSize 数组元素尺寸

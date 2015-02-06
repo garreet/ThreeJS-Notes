@@ -5,7 +5,8 @@
  * @author WestLangley / http://github.com/WestLangley
  */
 /**
- * @classdesc 3D对象基类
+ * @classdesc 3D对象基类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc Object3D是场景中图形对象的基类.Object3D对象主要是对象的矩阵变换，父子关系维护等功能
  * @constructor
  */

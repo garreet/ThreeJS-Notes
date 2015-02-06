@@ -39,7 +39,8 @@
  * }
  */
 /**
- * @classdesc mesh(网格)的Lambert(兰伯特)材质
+ * @classdesc mesh(网格)的Lambert(兰伯特)材质<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 表面有光泽的材质类型,计算每个像素)
  * @param {String} parameters 材质参数
  * @extends {THREE.Material}

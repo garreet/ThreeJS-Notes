@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 点云对象
+ * @classdesc 点云对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {THREE.Geometry} geometry 点云对象的几何对象
  * @param {THREE.Material} material	点云对象的材质对象
  * @constructor

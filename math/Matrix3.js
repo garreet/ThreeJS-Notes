@@ -5,7 +5,8 @@
  */
 
 /**
- * @classdesc  3×3矩阵
+ * @classdesc  3×3矩阵<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 行优先存储<br />
  * 0	1	2<br />
  * 3	4	5<br />

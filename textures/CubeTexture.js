@@ -2,7 +2,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 立方体纹理对象
+ * @classdesc 立方体纹理对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @extends {THREE.Texture}
  * @param {Image} images 图像对象
  * @param {number} mapping 映射模式

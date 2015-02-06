@@ -5,7 +5,8 @@
  */
 
 /**
- * @classdesc 纹理对象基类
+ * @classdesc 纹理对象基类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 用来创建一个反射折射或者纹理贴图对象
  * @param {Image} image	图片等Image类型对象
  * @param {number} mapping	映射模式

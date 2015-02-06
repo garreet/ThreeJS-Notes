@@ -20,7 +20,8 @@
  * }
  */
 /**
- * @classdesc 线线型材质
+ * @classdesc 线线型材质<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 据参数parameters创建线段的线线型材质，参数为JSON格式的属性参数
  * @param {String} parameters 材质参数
  * @extends {THREE.Material}

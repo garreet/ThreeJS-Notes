@@ -3,7 +3,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 点对象，也就是粒子对象
+ * @classdesc 点对象，也就是粒子对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 通过BufferGeometry创建一个正对相机的类似buildborad的粒子点
  * @param {THREE.Material} material 材质
  * @constructor

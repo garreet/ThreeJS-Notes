@@ -5,7 +5,8 @@
  * @author ikerr / http://verold.com
  */
 /**
- * @classdesc 骨架对象
+ * @classdesc 骨架对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 是骨骼对象的几何,是蒙皮对象的一部分<br />
  * 用来制作支持骨骼动画,当前有两种模型动画的方式：<br />
  * 顶点动画和骨骼动画。顶点动画中，每帧动画其实就是模型特定姿态的一个“快照”。<br />

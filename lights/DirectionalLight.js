@@ -3,7 +3,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 平行光源对象
+ * @classdesc 平行光源对象<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 平行光支持阴影
  * @param {THREE.Color} color 平行光的颜色属性
  * @param {float} intensity 平行光的强度,默认是1

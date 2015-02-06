@@ -2,7 +2,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 自定义着色器材质类型
+ * @classdesc 自定义着色器材质类型<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 自定义着色器材质类型让用户扩充材质类型,有了无限的可能<br />
  * 这个类和ShaderMaterial工作方式一样 <br />
  * 除了自定义的uniforms和attribute属性不会自动追加到GLSL着色器代码中

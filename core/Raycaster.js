@@ -6,7 +6,8 @@
 
 ( function ( THREE ) {
 	/**
-	 * @classdesc 射线拾取对象
+	 * @classdesc 射线拾取对象<br />
+	 * 注释内容部分参照 http://blog.csdn.net/omni360
 	 * @param {THREE.Vector3} origin 射线起点
 	 * @param {THREE.Vector3} direction 射线方向
 	 * @param {float} near 最近距离

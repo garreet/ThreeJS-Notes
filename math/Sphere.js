@@ -3,7 +3,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc 球体类
+ * @classdesc 球体类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc center,半径为radius的球体
  * @param {THREE.Vector3} center	中心点坐标
  * @param {float} radius 	半径

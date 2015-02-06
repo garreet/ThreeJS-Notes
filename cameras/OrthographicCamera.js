@@ -2,7 +2,8 @@
  * @author alteredq / http://alteredqualia.com/
  */
 /**
- * @classdesc 正交投影相机
+ * @classdesc 正交投影相机<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 根据  left, right, top, bottom, near, far 生成正交投影相
  * @constructor
  * @param {float} left		垂直平面的左侧坐标位置

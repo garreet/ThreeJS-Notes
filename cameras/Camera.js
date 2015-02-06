@@ -4,7 +4,8 @@
  * @author WestLangley / http://github.com/WestLangley
 */
 /**
- * @classdesc 相机基类
+ * @classdesc 相机基类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @constructor
  * @extends {THREE.Object3D}
  */

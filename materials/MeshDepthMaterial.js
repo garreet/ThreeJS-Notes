@@ -14,7 +14,8 @@
  * }
  */
 /**
- * @classdesc mesh(网格)的网格深度材质
+ * @classdesc mesh(网格)的网格深度材质<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 基于相机远近裁切面自动变换亮度(明暗度)的mesh(网格)的材质<br />
  * 离相机越近,材质越亮(白),离相机越远,材质越暗(黑)
  * @param {String} parameters 材质参数

@@ -2,7 +2,8 @@
  * @author mrdoob / http://mrdoob.com/
  */
 /**
- * @classdesc mesh(网格)的网格复合材质
+ * @classdesc mesh(网格)的网格复合材质<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 多材质，支持材质的列表<br />
  * 离相机越近,材质越亮(白),离相机越远,材质越暗(黑)
  * @param {String} parameters 材质参数

@@ -2,7 +2,8 @@
  * https://github.com/mrdoob/eventdispatcher.js/
  */
 /**
- * @classdesc 事件调度类
+ * @classdesc 事件调度类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 用来管理侦听函数,被嵌入Object3D对象之上.当Object3D发生事件时,这个方法就会自动被触发.<br />
  * 可以通过调用调度该事件的对象的 addEventListener() 方法来注册函数以处理运行时事件
  * @constructor

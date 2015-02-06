@@ -8,6 +8,7 @@
  */
 /**
  * @classdesc 几何体对象基类<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc Geometry是场景中由顶点和三角面构成的几何体对象的基类,保存描述几何体所有必要的数据
  * @constructor
  */

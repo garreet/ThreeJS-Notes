@@ -17,7 +17,8 @@
  * }
  */
 /**
- * @desc Sprite(点精灵)的材质
+ * @classdesc Sprite(点精灵)的材质<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @param {String} parameters 材质参数
  * @extends {THREE.Material}
  * @constructor

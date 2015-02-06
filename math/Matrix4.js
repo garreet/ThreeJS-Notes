@@ -12,7 +12,8 @@
  */
 
 /**
- * @classdesc  4×4矩阵
+ * @classdesc  4×4矩阵<br />
+ * 注释内容部分参照 http://blog.csdn.net/omni360
  * @desc 行优先存储<br />
  * 0	1	2	3<br />
  * 4	5	6	7<br />
