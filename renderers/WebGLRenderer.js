@@ -3000,7 +3000,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.vertexAttribPointer( program.attributes.color, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
-
+		// 设置未使用的Attribute无效
 		disableUnusedAttributes();
 
 		_gl.drawArrays( _gl.TRIANGLES, 0, object.count );
@@ -3016,23 +3016,24 @@ THREE.WebGLRenderer = function ( parameters ) {
 	 * @param {number} startIndex 开始位置索引
 	 */
 	function setupVertexAttributes( material, program, geometry, startIndex ) {
-
+		// 几何对象属性
 		var geometryAttributes = geometry.attributes;
-
+		// shader属性表
 		var programAttributes = program.attributes;
+		// shader属性表Key
 		var programAttributesKeys = program.attributesKeys;
 
 		for ( var i = 0, l = programAttributesKeys.length; i < l; i ++ ) {
-
+		// 遍历shader属性key表，拿到Attribute
 			var key = programAttributesKeys[ i ];
 			var programAttribute = programAttributes[ key ];
 
 			if ( programAttribute >= 0 ) {
-
+				// 找到几何对象中Attrubite
 				var geometryAttribute = geometryAttributes[ key ];
 
 				if ( geometryAttribute !== undefined ) {
-
+					// 找到，则绑定Attribute
 					var size = geometryAttribute.itemSize;
 
 					_gl.bindBuffer( _gl.ARRAY_BUFFER, geometryAttribute.buffer );
@@ -3042,13 +3043,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 					_gl.vertexAttribPointer( programAttribute, size, _gl.FLOAT, false, 0, startIndex * size * 4 ); // 4 bytes per Float32
 
 				} else if ( material.defaultAttributeValues !== undefined ) {
-
+					// 几何对象中没有，但有默认的Attribute，则绑定
 					if ( material.defaultAttributeValues[ key ].length === 2 ) {
-
+						// 2维对象
 						_gl.vertexAttrib2fv( programAttribute, material.defaultAttributeValues[ key ] );
 
 					} else if ( material.defaultAttributeValues[ key ].length === 3 ) {
-
+						// 3维对象
 						_gl.vertexAttrib3fv( programAttribute, material.defaultAttributeValues[ key ] );
 
 					}
@@ -3058,7 +3059,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 设置未用到的Attributes无效
 		disableUnusedAttributes();
 
 	}
@@ -3088,7 +3089,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			updateBuffers = true;
 
 		}
-
+		// 更新属性参数
 		if ( updateBuffers ) {
 
 			initAttributes();
@@ -3096,19 +3097,18 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 		// render mesh
-
+		// 渲染对象
 		if ( object instanceof THREE.Mesh ) {
-
+			// 线框模式或Mesh模式
 			var mode = material.wireframe === true ? _gl.LINES : _gl.TRIANGLES;
 
 			var index = geometry.attributes.index;
 
 			if ( index ) {
-
 				// indexed triangles
-
+				// 有三角形索引
 				var type, size;
-
+				// 判断索引字节数
 				if ( index.array instanceof Uint32Array && extensions.get( 'OES_element_index_uint' ) ) {
 
 					type = _gl.UNSIGNED_INT;
@@ -3124,16 +3124,16 @@ THREE.WebGLRenderer = function ( parameters ) {
 				var offsets = geometry.offsets;
 
 				if ( offsets.length === 0 ) {
-
+					// 只有一组对象渲染
 					if ( updateBuffers ) {
-
+						// 加载顶点属性值进shader
 						setupVertexAttributes( material, program, geometry, 0 );
 						_gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, index.buffer );
 
 					}
-
+					// 渲染对象
 					_gl.drawElements( mode, index.array.length, type, 0 );
-
+					// 统计信息更新
 					_this.info.render.calls ++;
 					_this.info.render.vertices += index.array.length; // not really true, here vertices can be shared
 					_this.info.render.faces += index.array.length / 3;
@@ -3143,7 +3143,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 					// if there is more than 1 chunk
 					// must set attribute pointers to use new offsets for each chunk
 					// even if geometry and materials didn't change
-
+					// 多组对象渲染
 					updateBuffers = true;
 
 					for ( var i = 0, il = offsets.length; i < il; i ++ ) {
@@ -3151,16 +3151,16 @@ THREE.WebGLRenderer = function ( parameters ) {
 						var startIndex = offsets[ i ].index;
 
 						if ( updateBuffers ) {
-
+							// 加载顶点属性值进shader
 							setupVertexAttributes( material, program, geometry, startIndex );
 							_gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, index.buffer );
 
 						}
 
 						// render indexed triangles
-
+						// 渲染索引三角形对象
 						_gl.drawElements( mode, offsets[ i ].count, type, offsets[ i ].start * size );
-
+						// 统计信息更新
 						_this.info.render.calls ++;
 						_this.info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
 						_this.info.render.faces += offsets[ i ].count / 3;
@@ -3172,9 +3172,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 			} else {
 
 				// non-indexed triangles
-
+				// 无索引三角形
 				if ( updateBuffers ) {
-
+					// 加载顶点属性值进shader
 					setupVertexAttributes( material, program, geometry, 0 );
 
 				}
@@ -3182,9 +3182,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 				var position = geometry.attributes[ 'position' ];
 
 				// render non-indexed triangles
-
+				// 渲染无索引三角形
 				_gl.drawArrays( mode, 0, position.array.length / 3 );
-
+				// 统计信息更新
 				_this.info.render.calls ++;
 				_this.info.render.vertices += position.array.length / 3;
 				_this.info.render.faces += position.array.length / 9;
@@ -5070,7 +5070,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var program = material.program,
 			p_uniforms = program.uniforms,
 			m_uniforms = material.__webglShader.uniforms;
-
+		// 判断glsl program是否需要更新
 		if ( program.id !== _currentProgram ) {
 
 			_gl.useProgram( program.program );
@@ -5081,7 +5081,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			refreshLights = true;
 
 		}
-
+		// 判断材质是否需要更新
 		if ( material.id !== _currentMaterialId ) {
 
 			if ( _currentMaterialId === -1 ) refreshLights = true;
@@ -5091,9 +5091,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
-		// 投影矩阵传入
+		// 如果program更新了，或相机对象改变了
 		if ( refreshProgram || camera !== _currentCamera ) {
-
+			// 传入新的相机投影矩阵
 			_gl.uniformMatrix4fv( p_uniforms.projectionMatrix, false, camera.projectionMatrix.elements );
 
 			if ( _logarithmicDepthBuffer ) {
@@ -5102,13 +5102,14 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			}
 
-
+			// 设置当前相机
 			if ( camera !== _currentCamera ) _currentCamera = camera;
 
 			// load material specific uniforms
 			// (shader material also gets them for the sake of genericity)
-
-			// 相机矩阵传入
+			// 加载材质的特殊uniforms
+			// 共享材质同样需要通用属性
+			// 传入相机位置
 			if ( material instanceof THREE.ShaderMaterial ||
 				 material instanceof THREE.MeshPhongMaterial ||
 				 material.envMap ) {
@@ -5122,7 +5123,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			}
 
-			// 世界矩阵传入
+			// 传入相机的世界矩阵的逆
 			if ( material instanceof THREE.MeshPhongMaterial ||
 				 material instanceof THREE.MeshLambertMaterial ||
 				 material instanceof THREE.ShaderMaterial ||
@@ -5190,21 +5191,20 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		}
-
+		// 更新材质
 		if ( refreshMaterial ) {
 
 			// refresh uniforms common to several materials
-
+			// 刷新材质通用的uniforms
 			if ( fog && material.fog ) {
-
+				// 刷新雾的uniform
 				refreshUniformsFog( m_uniforms, fog );
-
 			}
 
 			if ( material instanceof THREE.MeshPhongMaterial ||
 				 material instanceof THREE.MeshLambertMaterial ||
 				 material.lights ) {
-
+				// 更新光照设置
 				if ( _lightsNeedUpdate ) {
 
 					refreshLights = true;
@@ -5271,7 +5271,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 			// load common uniforms
-
+			// 加载材质通用的uniform
 			loadUniformsGeneric( material.uniformsList );
 
 		}
@@ -5430,16 +5430,16 @@ THREE.WebGLRenderer = function ( parameters ) {
 	 * @param {THREE.Material} material
 	 */
 	function refreshUniformsFog ( uniforms, fog ) {
-
+		// 雾的颜色
 		uniforms.fogColor.value = fog.color;
 
 		if ( fog instanceof THREE.Fog ) {
-
+			// 普通雾的远近距离
 			uniforms.fogNear.value = fog.near;
 			uniforms.fogFar.value = fog.far;
 
 		} else if ( fog instanceof THREE.FogExp2 ) {
-
+			// 指数雾的强度数值
 			uniforms.fogDensity.value = fog.density;
 
 		}
@@ -5988,7 +5988,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	//
 	/**
-	 * @desc 设置颜色参数
+	 * @desc 设置颜色Gamma参数(颜色平方)
 	 * @param {float[]} array 颜色值数组（一维）
 	 * @param {number} offset 数组起始偏移量
 	 * @param {THREE.Color} color 颜色值
@@ -6002,7 +6002,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 	}
 	/**
-	 * @desc 设置颜色线性差值
+	 * @desc 设置颜色参数
 	 * @param {float[]} array 颜色值数组（一维）
 	 * @param {number} offset 数组起始偏移量
 	 * @param {THREE.Color} color 颜色值
@@ -6017,8 +6017,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 	}
 
 	/**
-	 * @desc 更新光线
-	 * @param {THREE.Light[]} lights 光线集合
+	 * @desc 更新光照设置
+	 * @param {THREE.Light[]} lights 光照集合
 	 */
 	function setupLights ( lights ) {
 
@@ -6067,25 +6067,25 @@ THREE.WebGLRenderer = function ( parameters ) {
 		for ( l = 0, ll = lights.length; l < ll; l ++ ) {
 
 			light = lights[ l ];
-
+			// 光照只为阴影，跳过
 			if ( light.onlyShadow ) continue;
 
-			color = light.color;
-			intensity = light.intensity;
-			distance = light.distance;
+			color = light.color;			// 颜色
+			intensity = light.intensity;	// 强度
+			distance = light.distance;		// 距离
 
 			if ( light instanceof THREE.AmbientLight ) {
-
+				// 环境光影响颜色值
 				if ( ! light.visible ) continue;
 
 				if ( _this.gammaInput ) {
-
+					// 颜色平方
 					r += color.r * color.r;
 					g += color.g * color.g;
 					b += color.b * color.b;
 
 				} else {
-
+					// 颜色值
 					r += color.r;
 					g += color.g;
 					b += color.b;
@@ -6093,11 +6093,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 				}
 
 			} else if ( light instanceof THREE.DirectionalLight ) {
-
+				// 平行光
 				dirCount += 1;
 
 				if ( ! light.visible ) continue;
-
+				// 计算光线方向
 				_direction.setFromMatrixPosition( light.matrixWorld );
 				_vector3.setFromMatrixPosition( light.target.matrixWorld );
 				_direction.sub( _vector3 );
@@ -6108,7 +6108,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				dirPositions[ dirOffset ]     = _direction.x;
 				dirPositions[ dirOffset + 1 ] = _direction.y;
 				dirPositions[ dirOffset + 2 ] = _direction.z;
-
+				// 设置光线颜色
 				if ( _this.gammaInput ) {
 
 					setColorGamma( dirColors, dirOffset, color, intensity * intensity );
