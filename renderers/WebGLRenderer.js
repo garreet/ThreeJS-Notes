@@ -2913,14 +2913,15 @@ THREE.WebGLRenderer = function ( parameters ) {
 	 * @param {THREE.Material} material 渲染材质
 	 */
 	this.renderBufferImmediate = function ( object, program, material ) {
-
+		// 初始化shader属性列表
 		initAttributes();
 
+		// 创建WebGLBuffer 顶点，法线，UV ，颜色
 		if ( object.hasPositions && ! object.__webglVertexBuffer ) object.__webglVertexBuffer = _gl.createBuffer();
 		if ( object.hasNormals && ! object.__webglNormalBuffer ) object.__webglNormalBuffer = _gl.createBuffer();
 		if ( object.hasUvs && ! object.__webglUvBuffer ) object.__webglUvBuffer = _gl.createBuffer();
 		if ( object.hasColors && ! object.__webglColorBuffer ) object.__webglColorBuffer = _gl.createBuffer();
-
+		// 绑定顶点
 		if ( object.hasPositions ) {
 
 			_gl.bindBuffer( _gl.ARRAY_BUFFER, object.__webglVertexBuffer );
@@ -2929,13 +2930,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.vertexAttribPointer( program.attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
-
+		// 绑定法线
 		if ( object.hasNormals ) {
 
 			_gl.bindBuffer( _gl.ARRAY_BUFFER, object.__webglNormalBuffer );
 
 			if ( material.shading === THREE.FlatShading ) {
-
+				// 法线平滑方式，恒定着色
 				var nx, ny, nz,
 					nax, nbx, ncx, nay, nby, ncy, naz, nbz, ncz,
 					normalArray,
@@ -2982,7 +2983,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.vertexAttribPointer( program.attributes.normal, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
-
+		// 绑定UV
 		if ( object.hasUvs && material.map ) {
 
 			_gl.bindBuffer( _gl.ARRAY_BUFFER, object.__webglUvBuffer );
@@ -2991,7 +2992,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			_gl.vertexAttribPointer( program.attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
 
 		}
-
+		// 绑定颜色
 		if ( object.hasColors && material.vertexColors !== THREE.NoColors ) {
 
 			_gl.bindBuffer( _gl.ARRAY_BUFFER, object.__webglColorBuffer );
@@ -3002,9 +3003,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 		// 设置未使用的Attribute无效
 		disableUnusedAttributes();
-
+		// 渲染
 		_gl.drawArrays( _gl.TRIANGLES, 0, object.count );
-
+		// 更新对象信息
 		object.count = 0;
 
 	};
@@ -3078,7 +3079,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		if ( material.visible === false ) return;
 		// 创建glsl程序
 		var program = setProgram( camera, lights, fog, material, object );
-
+		// 设置当前渲染几何对象HASH表
 		var updateBuffers = false,
 			wireframeBit = material.wireframe ? 1 : 0,
 			geometryHash = ( geometry.id * 0xffffff ) + ( program.id * 2 ) + wireframeBit;
@@ -3194,9 +3195,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 		} else if ( object instanceof THREE.PointCloud ) {
 
 			// render particles
-
 			if ( updateBuffers ) {
-
+				// 加载顶点属性值进shader
 				setupVertexAttributes( material, program, geometry, 0 );
 
 			}
@@ -3204,16 +3204,16 @@ THREE.WebGLRenderer = function ( parameters ) {
 			var position = geometry.attributes.position;
 
 			// render particles
-
+			// 渲染粒子
 			_gl.drawArrays( _gl.POINTS, 0, position.array.length / 3 );
-
+			// 统计信息更新
 			_this.info.render.calls ++;
 			_this.info.render.points += position.array.length / 3;
 
 		} else if ( object instanceof THREE.Line ) {
-
+			// 判断是普通线模式还是折线模式
 			var mode = ( object.mode === THREE.LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
-
+			// 设置线宽（好像没效果，都是1像素）
 			setLineWidth( material.linewidth );
 
 			var index = geometry.attributes.index;
@@ -3221,9 +3221,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 			if ( index ) {
 
 				// indexed lines
-
+				// 有索引线
 				var type, size;
-
+				// 判断索引位数，4字节还是2字节
 				if ( index.array instanceof Uint32Array ) {
 
 					type = _gl.UNSIGNED_INT;
@@ -3235,20 +3235,20 @@ THREE.WebGLRenderer = function ( parameters ) {
 					size = 2;
 
 				}
-
+				// 判断是否有offsets
 				var offsets = geometry.offsets;
 
 				if ( offsets.length === 0 ) {
-
+					// 无offerset
 					if ( updateBuffers ) {
-
+						// 设置Shader中顶点Attribute
 						setupVertexAttributes( material, program, geometry, 0 );
 						_gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, index.buffer );
 
 					}
-
+					// 渲染线对象
 					_gl.drawElements( mode, index.array.length, type, 0 ); // 2 bytes per Uint16Array
-
+					// 更新渲染参数
 					_this.info.render.calls ++;
 					_this.info.render.vertices += index.array.length; // not really true, here vertices can be shared
 
@@ -3259,22 +3259,22 @@ THREE.WebGLRenderer = function ( parameters ) {
 					// even if geometry and materials didn't change
 
 					if ( offsets.length > 1 ) updateBuffers = true;
-
+					// 遍历每一组渲染
 					for ( var i = 0, il = offsets.length; i < il; i ++ ) {
 
 						var startIndex = offsets[ i ].index;
 
 						if ( updateBuffers ) {
-
+							// 设置Shader中顶点Attribute
 							setupVertexAttributes( material, program, geometry, startIndex );
 							_gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, index.buffer );
 
 						}
 
 						// render indexed lines
-
+						// 渲染线对象
 						_gl.drawElements( mode, offsets[ i ].count, type, offsets[ i ].start * size ); // 2 bytes per Uint16Array
-
+						// 统计信息更新
 						_this.info.render.calls ++;
 						_this.info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
 
@@ -3285,7 +3285,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			} else {
 
 				// non-indexed lines
-
+				// 设置Shader中顶点Attribute
 				if ( updateBuffers ) {
 
 					setupVertexAttributes( material, program, geometry, 0 );
@@ -3293,9 +3293,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 				}
 
 				var position = geometry.attributes.position;
-
+				// 渲染线对象
 				_gl.drawArrays( mode, 0, position.array.length / 3 );
-
+				// 统计信息更新
 				_this.info.render.calls ++;
 				_this.info.render.points += position.array.length / 3;
 
@@ -3315,13 +3315,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 	 * @param {THREE.Object3D} object 对象
 	 */
 	this.renderBuffer = function ( camera, lights, fog, material, geometryGroup, object ) {		//garreet
-
+		// 如果材质不可见，返回
 		if ( material.visible === false ) return;
-
+		// 设置glsl程序
 		var program = setProgram( camera, lights, fog, material, object );
 
 		var attributes = program.attributes;
-
+		// 设置当前渲染几何对象HASH表
 		var updateBuffers = false,
 			wireframeBit = material.wireframe ? 1 : 0,
 			geometryGroupHash = ( geometryGroup.id * 0xffffff ) + ( program.id * 2 ) + wireframeBit;
@@ -3332,7 +3332,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			updateBuffers = true;
 
 		}
-
+		// 初始化Attributes数组
 		if ( updateBuffers ) {
 
 			initAttributes();
@@ -3340,11 +3340,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 		}
 
 		// vertices
-
+		// 顶点数据处理
 		if ( ! material.morphTargets && attributes.position >= 0 ) {
-
+			// 如果没有可变动画顶点，并且attributes有值
 			if ( updateBuffers ) {
-
+				// 更新顶数据进shader
 				_gl.bindBuffer( _gl.ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
 				enableAttribute( attributes.position );
 				_gl.vertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
@@ -3352,22 +3352,22 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 		} else {
-
+			// 如果有可变顶点动画
 			if ( object.morphTargetBase ) {
-
+				// 设置可变顶点目标数组
 				setupMorphTargets( material, geometryGroup, object );
 
 			}
 
 		}
 
-
+		// 更新渲染数据
 		if ( updateBuffers ) {
 
 			// custom attributes
 
 			// Use the per-geometryGroup custom attribute arrays which are setup in initMeshBuffers
-
+			// 自定义属性数据更新
 			if ( geometryGroup.__webglCustomAttributesList ) {
 
 				for ( var i = 0, il = geometryGroup.__webglCustomAttributesList.length; i < il; i ++ ) {
@@ -3388,7 +3388,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 
 			// colors
-
+			// 颜色属性更新
 			if ( attributes.color >= 0 ) {
 
 				if ( object.geometry.colors.length > 0 || object.geometry.faces.length > 0 ) {
@@ -3407,7 +3407,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 			// normals
-
+			// 法线属性更新
 			if ( attributes.normal >= 0 ) {
 
 				_gl.bindBuffer( _gl.ARRAY_BUFFER, geometryGroup.__webglNormalBuffer );
@@ -3417,7 +3417,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 			// tangents
-
+			// 切线属性更新
 			if ( attributes.tangent >= 0 ) {
 
 				_gl.bindBuffer( _gl.ARRAY_BUFFER, geometryGroup.__webglTangentBuffer );
@@ -3427,7 +3427,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 			// uvs
-
+			// uv属性更新
 			if ( attributes.uv >= 0 ) {
 
 				if ( object.geometry.faceVertexUvs[ 0 ] ) {
@@ -3444,7 +3444,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				}
 
 			}
-
+			// uv2属性更新
 			if ( attributes.uv2 >= 0 ) {
 
 				if ( object.geometry.faceVertexUvs[ 1 ] ) {
@@ -3461,7 +3461,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				}
 
 			}
-
+			// 蒙皮属性更新
 			if ( material.skinning &&
 				 attributes.skinIndex >= 0 && attributes.skinWeight >= 0 ) {
 
@@ -3476,7 +3476,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 			}
 
 			// line distances
-
+			// 线距离属性更新
 			if ( attributes.lineDistance >= 0 ) {
 
 				_gl.bindBuffer( _gl.ARRAY_BUFFER, geometryGroup.__webglLineDistanceBuffer );
@@ -3487,31 +3487,38 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
+		// 设置未使用属性无效
 		disableUnusedAttributes();
 
 		// render mesh
-
+		// 渲染
 		if ( object instanceof THREE.Mesh ) {
-
+			// Mesh对象
+			// 判断索引类型，4字节还是2字节
 			var type = geometryGroup.__typeArray === Uint32Array ? _gl.UNSIGNED_INT : _gl.UNSIGNED_SHORT;
 
 			// wireframe
 
 			if ( material.wireframe ) {
-
+				// 边框模式渲染
+				// 设置边框线宽
 				setLineWidth( material.wireframeLinewidth );
+				// 绑定边线buffer信息
 				if ( updateBuffers ) _gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, geometryGroup.__webglLineBuffer );
+				// 渲染边框
 				_gl.drawElements( _gl.LINES, geometryGroup.__webglLineCount, type, 0 );
 
 			// triangles
 
 			} else {
-
+				// 正常渲染
+				// 绑定面buffer信息
 				if ( updateBuffers ) _gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, geometryGroup.__webglFaceBuffer );
+				// 渲染对象
 				_gl.drawElements( _gl.TRIANGLES, geometryGroup.__webglFaceCount, type, 0 );
 
 			}
-
+			// 统计信息更新
 			_this.info.render.calls ++;
 			_this.info.render.vertices += geometryGroup.__webglFaceCount;
 			_this.info.render.faces += geometryGroup.__webglFaceCount / 3;
@@ -3519,21 +3526,22 @@ THREE.WebGLRenderer = function ( parameters ) {
 		// render lines
 
 		} else if ( object instanceof THREE.Line ) {
-
+			// 线对象渲染
+			// 获得线属性
 			var mode = ( object.mode === THREE.LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
-
+			// 设置线宽
 			setLineWidth( material.linewidth );
-
+			// 渲染线对象
 			_gl.drawArrays( mode, 0, geometryGroup.__webglLineCount );
-
+			// 统计信息更新
 			_this.info.render.calls ++;
 
 		// render particles
 
 		} else if ( object instanceof THREE.PointCloud ) {
-
+			// 点云对象渲染
 			_gl.drawArrays( _gl.POINTS, 0, geometryGroup.__webglParticleCount );
-
+			// 统计信息更新
 			_this.info.render.calls ++;
 			_this.info.render.points += geometryGroup.__webglParticleCount;
 
@@ -3574,7 +3582,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	function disableUnusedAttributes() {
 
 		for ( var i = 0, l = _enabledAttributes.length; i < l; i ++ ) {
-
+			// 循环判断原有属性列表与新属性列表是否相等
 			if ( _enabledAttributes[ i ] !== _newAttributes[ i ] ) {
 
 				_gl.disableVertexAttribArray( i );
@@ -4121,22 +4129,22 @@ THREE.WebGLRenderer = function ( parameters ) {
 	function renderObjectsImmediate ( renderList, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
 
 		var material;
-
+		// 遍历渲染列表
 		for ( var i = 0, il = renderList.length; i < il; i ++ ) {
 
 			var webglObject = renderList[ i ];
 			var object = webglObject.object;
 
 			if ( object.visible ) {
-
+				// 判断对象是否可见
 				if ( overrideMaterial ) {
-
+					// 是否强制材质
 					material = overrideMaterial;
 
 				} else {
 
 					material = webglObject[ materialType ];
-
+					// 设置材质相关信息
 					if ( ! material ) continue;
 
 					if ( useBlending ) _this.setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst );
@@ -4146,7 +4154,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 					setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
 
 				}
-
+				// 真正渲染即时对象
 				_this.renderImmediateObject( camera, lights, fog, material, object );
 
 			}
@@ -4170,16 +4178,16 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		_currentGeometryGroupHash = - 1;
 
-		// 设置材质面
+		// 设置材质面的裁剪方式及点序顺逆
 		_this.setMaterialFaces( material );
 
 		// 渲染
 		if ( object.immediateRenderCallback ) {
-
+			// 即时渲染回调
 			object.immediateRenderCallback( program, _gl, _frustum );
 
 		} else {
-
+			// 普通渲染
 			object.render( function ( object ) { _this.renderBufferImmediate( object, program, material ); } );
 
 		}
